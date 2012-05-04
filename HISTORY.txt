@@ -1,0 +1,9 @@
+v. 20120222
+-----------
+
+Initial release
+
+v. 20120301
+-----------
+
+Added cookie-based auto-login for 1 month after successfull authorization.
