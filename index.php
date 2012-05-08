@@ -1,123 +1,41 @@
 <?php 
 	include('config.php');
-	if($pwd)
+	if($use_authorization)
 		session_start();
 ?>
 <html>
 <head>
 	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
 	<link rel='icon' type='image/png' href='chess-knight.png' />
-	<title><?php echo "$title"; ?></title>
-	<script language='JavaScript'>
-	// set cookie for given period (in seconds)
-	function setCookie(name, value, period) {
-		var expDate= new Date(); // current date
-		expDate.setTime(expDate.getTime()+period*1000);
-		document.cookie= name+"="+escape(value)+
-				"; expires="+expDate.toGMTString();
-	}
-	// get cookie (returns NULL, if there isn't such cookie)
-	function getCookie(name) {
-		var prefix = name + "=";
-		var cookieStartIndex = document.cookie.indexOf(prefix);
-		if (cookieStartIndex == -1)
-			return null;
-		var cookieEndIndex = document.cookie.indexOf(";",
-				cookieStartIndex + prefix.length);
-		if (cookieEndIndex == -1)
-			cookieEndIndex = document.cookie.length;
-		return unescape(document.cookie.substring(cookieStartIndex +
-				prefix.length, cookieEndIndex));
-	}
-	</script>
+	<title>WikiOne <?php echo $wikione_version; ?></title>
 </head>
 <body>
 <?php
-	# Обрабатываем сессии, если надо
-	if($pwd) {
-		if(!isset($_SESSION['login'])) {
-			if(isset($_POST['password'])) {
-				if($_POST['password'] == $pwd) {
-					# Авторизация
-					$_SESSION['login']=true;
-					echo "<script>
-						setCookie('pwd', '$pwd', 60*60*24*30); // 30 days
-						</script>";
-				}
-				else {
-					# Неверный пароль#
-					echo "Неверный пароль.<br />
-						<form action='index.php' method='POST'>
-							<label>Введите пароль: </label>
-							<input type=password name='password' />
-							<input type=submit value='Ввести' />
-						</form>
-						</body>
-						</html>";
-				return;
-				}
-			}
-			else {
-				echo "<form id='loginForm' action='index.php' method='POST'>
-						<label>Введите пароль: </label>
-						<input id='nameInput' type=password name='password' />
-						<input type=submit value='Ввести' />
-					</form>
-					<script>
-					var cookiePwd= getCookie('pwd');
-					if(cookiePwd) {
-						document.getElementById('nameInput').value= cookiePwd;
-						document.forms['loginForm'].submit();
-					}
-					</script>
-					</body>
-					</html>";
-				return;
-			}
-		}
-		if(isset($_GET['logout'])) {
-			unset($_SESSION['login']);
-			echo "<script>
-					setCookie('pwd', '', -1); // delete a cookie
-					window.location.href='index.php';
-				</script>
-				</body>
-				</html>";
-			return;
-		}
-	}
-	
-	include('wikirender.php');
-	# Подключаем базу данных
+	# Подключение к БД
 	if(!mysql_connect($dbhost,$dbuser,$dbpwd))
 		{ echo "Error connecting DB: ".mysql_error(); return; }
-	mysql_query('SET NAMES utf8');
-	if(!mysql_select_db($dbname)) { # база данных не существует
-		$query="CREATE DATABASE $dbname CHARACTER SET utf8";
-		if(!mysql_query($query))
-			{ echo "Error creating DB: ".mysql_error(); mysql_close(); return; }
-		if(!mysql_select_db($dbname))
-			{ echo "Error selecting DB".mysql_error(); mysql_close(); return; }
+	mysql_query("SET NAMES utf8");
+	if(!mysql_select_db($dbname))
+		{ echo "Error selecting DB".mysql_error(); mysql_close(); return; }
+	# Авторизация
+	if($use_authorization && !isset($_SESSION['login'])) {
+		echo "<script>
+			window.location.href='login.php';
+			</script></body></html>";
+		return;
 	}
-	$query="CREATE TABLE IF NOT EXISTS groups (
-		id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-		name CHAR(30) NOT NULL
-	)";
-	if(!mysql_query($query))
-		{ echo "Error creating table: ".mysql_error(); mysql_close(); return; }
-	$query="CREATE TABLE IF NOT EXISTS  records (
-		id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-		groupid INT,
-		title CHAR(100) NOT NULL,
-		star TINYINT,
-		text TEXT
-	)";
-	if(!mysql_query($query))
-		{ echo "Error creating table: ".mysql_error(); mysql_close(); return; }
-	# Читаем параметры обзора
+	# Читаем общие настройки
+	$r=mysql_query("SELECT title,email FROM {$dbtableprefix}settings");
+	if(!$r || !mysql_num_rows($r)) {
+		echo "Error reading settings from DB".mysql_error(); mysql_close(); return;
+	}
+	$row=mysql_fetch_row($r);
+	$title=stripslashes($row[0]);
+	$email=stripslashes($row[1]);
+	# Читаем параметры текущего вида
 	if(isset($_GET['groupid'])) {
 		$groupid=$_GET['groupid'];
-		$r=mysql_query("SELECT name FROM groups WHERE id=$groupid");
+		$r=mysql_query("SELECT name FROM {$dbtableprefix}groups WHERE id=$groupid");
 		if(!$r)
 			{ echo "Error: ".mysql_error(); mysql_close(); return; }
 		if(!mysql_num_rows($r))
@@ -131,18 +49,18 @@
 		$recordid=$_GET['recordid'];		
 	else
 		$recordid=0;
+	# Обрабатываем запрошенные действия
 	if(isset($_GET['action'])) {
 		$action=$_GET['action'];
-		# Обрабатываем запрошенные действия
 		switch($action) {
 		case 'addgroup':
 			$newgroupname=$_POST['name'];
 			if($newgroupname) {
-				if(!mysql_query("INSERT INTO groups SET name='".
+				if(!mysql_query("INSERT INTO {$dbtableprefix}groups SET name='".
 					mysql_real_escape_string($newgroupname)."'"))
 					{ echo "Error: ".mysql_error(); mysql_close(); return; }
-				echo "Группа $newgroupname добавлена.\n";
-				$r=mysql_query("SELECT LAST_INSERT_ID() FROM groups");
+				echo "Группа $newgroupname добавлена.<br>";
+				$r=mysql_query("SELECT LAST_INSERT_ID() FROM {$dbtableprefix}groups");
 				if(!$r || !mysql_num_rows($r))
 					{ echo "Error: ".mysql_error(); mysql_close(); return; }
 				$row=mysql_fetch_row($r);
@@ -150,7 +68,7 @@
 				$groupname=$newgroupname;
 			}
 			else {
-				echo "Имя группы не задано!\n";
+				echo "Имя группы не задано!<br>";
 			}
 			break;
 		case 'editgroup':
@@ -158,23 +76,26 @@
 				{ echo "Error: group id is not given"; mysql_close(); return; }
 			$newgroupname=$_POST['name'];
 			if($newgroupname) { # переименование
-				if(!mysql_query("UPDATE groups SET name='".
-					mysql_real_escape_string($newgroupname)."' 
-					WHERE id=$groupid"))
+				if(!mysql_query("UPDATE {$dbtableprefix}groups SET name='".
+						mysql_real_escape_string($newgroupname)."' 
+						WHERE id=$groupid"))
 					{ echo "Error: ".mysql_error(); mysql_close(); return; }
-				echo "Группа переименована.\n";
+				echo "Группа переименована.<br>";
 				$groupname=$newgroupname;
 			}
 			else { # Удаление
-				$r=mysql_query("SELECT id FROM records WHERE groupid=$groupid");
+				$r=mysql_query("SELECT id FROM {$dbtableprefix}records
+					WHERE groupid=$groupid");
 				if(!$r)
 					{ echo "Error: ".mysql_error(); mysql_close(); return; }
-				if(mysql_num_rows($r))
-					echo "Удалить можно тольку пустую группу!\n";
+				if(mysql_num_rows($r)) {
+					echo "Удалить можно тольку пустую группу!<br>";
+				}
 				else {
-					if(!mysql_query("DELETE FROM groups WHERE id=$groupid"))
+					if(!mysql_query("DELETE FROM {$dbtableprefix}groups 
+							WHERE id=$groupid"))
 						{ echo "Error: ".mysql_error(); mysql_close(); return; }
-					echo "Группа удалена\n";
+					echo "Группа удалена<br>";
 					$groupid=0;
 				}
 			}
@@ -183,22 +104,23 @@
 			$newrecordtitle=$_POST['title'];
 			if($newrecordtitle) {
 				$newrecordstar=$_POST['star'];
-				$query="INSERT INTO records SET
+				$query="INSERT INTO {$dbtableprefix}records SET
 					title='".mysql_real_escape_string($newrecordtitle)."',
-					star='$newrecordstar'";
+					star='$newrecordstar',
+					created=NOW()";
 				if($groupid)
 					$query=$query.",groupid=$groupid";
 				if(!mysql_query($query))
 					{ echo "Error: ".mysql_error(); mysql_close(); return; }
-				echo "Запись добавлена.\n";
-				$r=mysql_query("SELECT LAST_INSERT_ID() FROM records");
+				echo "Запись добавлена.<br>";
+				$r=mysql_query("SELECT LAST_INSERT_ID() FROM {$dbtableprefix}records");
 				if(!$r || !mysql_num_rows($r))
 					{ echo "Error: ".mysql_error(); mysql_close(); return; }
 				$row=mysql_fetch_row($r);
 				$recordid=$row[0];
 			}
 			else {
-				echo "Заголовок записи не задан!\n";
+				echo "Заголовок записи не задан!<br>";
 			}
 			break;
 		case 'editrecord':
@@ -206,31 +128,61 @@
 				{ echo "Error: record id is not given"; mysql_close(); return; }
 			$newrecordtitle=$_POST['title'];
 			if($newrecordtitle) { # изменение
-				$query="UPDATE records SET groupid='{$_POST['groupid']}',
+				$query="UPDATE {$dbtableprefix}records SET groupid='{$_POST['groupid']}',
 					title='".mysql_real_escape_string($newrecordtitle)."',
 					star='{$_POST['star']}',
-					text='".mysql_real_escape_string($_POST['text'])."'
+					text='".mysql_real_escape_string($_POST['text'])."',
+					modified=NOW()
 					WHERE id=$recordid";
 				if(!mysql_query($query))
 					{ echo "Error: ".mysql_error(); mysql_close(); return; }
-				echo "Запись изменена.\n";
+				echo "Запись изменена.<br>";
 			}
 			else { # Удаление
 				if($_POST['text'])
-					echo "Удалить можно тольку запись без текста!\n";
+					echo "Удалить можно тольку запись без текста!<br>";
 				else {
-					if(!mysql_query("DELETE FROM records WHERE id=$recordid"))
+					if(!mysql_query("DELETE FROM {$dbtableprefix}records
+							WHERE id=$recordid"))
 						{ echo "Error: ".mysql_error(); mysql_close(); return; }
-					echo "Запись удалена\n";
+					echo "Запись удалена<br>";
 					$recordid=0;
 				}
+			}
+			break;
+		case 'addnote':
+			if(!$recordid)
+				{ echo "Error: record id is not given"; mysql_close(); return; }
+			$notetext=$_POST['text'];
+			if($notetext) {
+				$query="INSERT INTO {$dbtableprefix}notes(recordid,text,created)
+					VALUES('$recordid',
+					'".mysql_real_escape_string($notetext)."',
+					NOW())";
+				if(!mysql_query($query))
+					{ echo "Error: ".mysql_error(); mysql_close(); return; }
+				echo "Комментарий добавлен.<br>";
+			}
+			else {
+				echo "Текст комментарий не задан!<br>";
 			}
 			break;
 		}
 	}
 	else
 		$action='';
-	
+
+	# Подключаем движок Вики
+	require_once('./creole.php');
+	$creole = new creole(
+		array(
+			'link_format' => '/index.php?nameid=%s'
+			#'interwiki' => array(
+			#	'WikiCreole' => 'http://www.wikicreole.org/wiki/%s',
+			#	'Wikipedia' => 'http://en.wikipedia.org/wiki/%s'
+			#)
+		)
+	);
 	# Выводим страницу
 	# Заголовок
 	echo "<table><tr><td>
@@ -238,11 +190,11 @@
 		<td><h1>$title</h1></td></tr></table>";
 	# Список групп
 	echo "<table width=100% bgcolor=#FFD4FF><tr><td>";
-	$r=mysql_query("SELECT id,name FROM groups");
+	$r=mysql_query("SELECT id,name FROM {$dbtableprefix}groups");
 	if(!$r)
 		{ echo "Error: ".mysql_error(); mysql_close(); return; }		
-	while($row=mysql_fetch_array($r))
-		echo "<a href='index.php?groupid={$row['id']}'>{$row['name']}</a> ";
+	while($row=mysql_fetch_row($r))
+		echo "<a href='index.php?groupid={$row[0]}'>".stripslashes($row[1])."</a> ";
 	echo "</td><td align=right>
 		<form action='index.php?action=addgroup' method='POST'>
 			<input name='name' type='text'/>
@@ -255,29 +207,28 @@
 		echo "<table align=center><tr><td bgcolor=#D4FFD4>";
 	echo "<h3>";
 	if($groupid) {
-		echo $groupname;
-		$query="SELECT id,title,star FROM records WHERE groupid=$groupid";
+		echo stripslashes($groupname);
+		$query="SELECT id,title,star FROM {$dbtableprefix}records WHERE groupid=$groupid";
 	}
 	else {
 		echo "Все записи";
-		$query="SELECT id,title,star FROM records";
+		$query="SELECT id,title,star FROM {$dbtableprefix}records";
 	}
 	$query=$query." ORDER BY star DESC";
 	$r=mysql_query($query);
 	if(!$r)
 		{ echo "Error: ".mysql_error(); mysql_close(); return; }		
-	echo "</h3>
-		<a href=#addrecord><p align='right' style='margin-bottom:7px'>&darr;Добавить запись</p></a>
-		<ol>";
-	while($row=mysql_fetch_array($r)) {
+	echo "</h3><a href=#addrecord>
+		<p align='right' style='margin-bottom:7px'>&darr;Добавить запись</p></a><ol>";
+	while($row=mysql_fetch_row($r)) {
 		echo "<li>";
-		if($row['star'] == 3)
+		if($row[2] == 3)
 			echo "<b>";
 		echo "<a href='index.php?".($groupid ? "groupid=$groupid&" : "").
-			"recordid={$row['id']}'>{$row['title']}";
-		if($row['star'])
-			echo "<sup>".str_repeat('*',$row['star'])."</sup></b>";
-		echo "</a></li>\n";
+			"recordid={$row[0]}'>".stripslashes($row[1]);
+		if($row[2])
+			echo "<sup>".str_repeat('*',$row[2])."</sup></b>";
+		echo "</a></li>";
 	}
 	echo "</ol>
 		<a name='addrecord' />
@@ -298,12 +249,12 @@
 			<a href='#editgroup'
 			onclick=\"javascript:document.getElementById('editgroup').
 			style.display='block'\">
-			Изменить группу</a></div>\n
+			Изменить группу</a></div>
 			<div id='editgroup' style='display:none'>
 			<a name='editgroup' />
 			<form action='index.php?action=editgroup&groupid=$groupid'
 			method='POST'>
-				<input name='name' type='text' value='$groupname'/>
+				<input name='name' type='text' value='".stripslashes($groupname)."'/>
 				<input type='submit' value='Сохранить' />
 			</form></div>";
 	}
@@ -311,44 +262,56 @@
 	# Текущая запись
 	if($recordid) {
 		echo "<td bgcolor=#FFFFD4 valign=top>";
-		$r=mysql_query("SELECT * FROM records WHERE id=$recordid");
+		# Заголовок
+		$r=mysql_query("SELECT id,groupid,title,star,text,created,modified 
+				FROM {$dbtableprefix}records
+				WHERE id=$recordid");
 		if(!$r)
 			{ echo "Error: ".mysql_error(); mysql_close(); return; }
 		if(!mysql_num_rows($r))
 			{ echo "Error: no record with id=$recordid"; mysql_close(); return; }
-		$row=mysql_fetch_array($r);
+		$row=mysql_fetch_row($r);
 		echo "<h2>";
-		$groupid1=$row['groupid'];
+		$groupid1=$row[1];
 		if($groupid1) {
-			$r1=mysql_query("SELECT name FROM groups WHERE id=$groupid1");
+			$r1=mysql_query("SELECT name FROM {$dbtableprefix}groups WHERE id=$groupid1");
 			if(!$r1)
 				{ echo "Error: ".mysql_error(); mysql_close(); return; }
 			if(!mysql_num_rows($r))
 				{ echo "Error: unexisted group id ($groupid1)."; mysql_close(); return; }
 			$row1=mysql_fetch_row($r1);
 			$groupname1=$row1[0];
-			echo "$groupname1: ";
+			echo stripslashes($groupname1).": ";
 		}
 		else
 			$groupname1='';
-		echo $row['title'];
-		$star1=$row['star'];
+		echo stripslashes($row[2]);
+		$star1=$row[3];
 		if($star1)
 			echo "<sup>".str_repeat('*',$star1)."</sup>";
-		echo "</h2>\n";
-		echo wiki_render($row['text']);
+		echo "</h2>";
+		# Даты создания и редактирования
+		if($row[5] or $row[6]) {
+			echo "<p style='margin-left:20px;font-style:italic'>";
+			if($row[5])
+				echo "Создано ".strftime("%c",strtotime($row[5]))." ";
+			if($row[6])
+				echo "Изменено ".strftime("%c",strtotime($row[6]));
+		}
+		# Содержание записи
+		echo $creole->parse(stripslashes($row[4]));
 		# Редактирование
 		echo "<div align=right>
 			<a href='#editrecord'
 			onclick=\"javascript:document.getElementById('editrecord').
 			style.display='block'\">
-			Редактировать</a></div>\n
+			Редактировать</a></div>
 			<div id='editrecord' style='display:".
 			($action == 'addrecord' ? 'block' : 'none')."'>
 			<a name='editrecord' />
 			<form action='index.php?action=editrecord&recordid=$recordid".
 			($groupid ? "&groupid=$groupid" : "")."' method='POST'>
-			<input name='title' type='text' size=70 value='{$row['title']}' />
+			<input name='title' type='text' size=70 value='{$row[2]}' />
 			<select name='star'/>
 				<option value=0 ".($star1 == 0 ? 'selected' : '')." />
 				<option value=1 ".($star1 == 1 ? 'selected' : '').">*</option>
@@ -357,28 +320,50 @@
 			</select>
 			<select name='groupid' />
 				<option value=0 ".(!$groupid1 ? 'selected' : '')." />";
-		$r2=mysql_query("SELECT id,name FROM groups");
+		$r2=mysql_query("SELECT id,name FROM {$dbtableprefix}groups");
 		if(!$r2)
 			{ echo "Error: ".mysql_error(); mysql_close(); return; }
-		while($row2=mysql_fetch_array($r2))
-			echo "<option value={$row2['id']} ".($groupid1 == $row2['id'] ? 'selected' : '').">
-				{$row2['name']}</option>\n";
+		while($row2=mysql_fetch_row($r2))
+			echo "<option value={$row2[0]} ".
+				($groupid1 == $row2[0] ? 'selected' : '').">
+				".stripslashes($row2[1])."</option>";
 		echo "</select><br/>
-			<textarea name='text' cols=60 rows=10 style='margin-top:7px;margin-bottom:7px'>";
-		echo $row['text'];
+			<textarea name='text' cols=60 rows=10
+				style='margin-top:7px;margin-bottom:7px'>";
+		echo stripslashes($row[4]);
 		echo "</textarea><br />
 			<input type='submit' value='Сохранить' />
-			</form></div>
-			</td>";
+			</form></div>";
+		# Комментарии
+		$r=mysql_query("SELECT text,created FROM {$dbtableprefix}notes
+				WHERE recordid=$recordid");
+		if(!$r)
+			{ echo "Error: ".mysql_error(); mysql_close(); return; }
+		while($row=mysql_fetch_row($r)) {
+			echo "<table style='margin-left:100px;margin-top:5px;margin-bottom:5px; 
+				background-color:#EEEEA4'><tr>
+				<td style='font-style:italic'>".strftime("%c",strtotime($row[1]))."
+				<td style='padding-left:20px'>".stripslashes($row[0])."</tr></table>";
+		}
+		# Добавление комментария
+		echo "<div align=right style='margin-top:5px'><a name='addnote' />
+			<form action='index.php?action=addnote&recordid=$recordid".
+			($groupid ? "&groupid=$groupid" : "")."' method='POST'>
+			<textarea name='text' cols=40 rows=5></textarea><br>
+			<input type='submit' value='Комментировать' />
+			</form></div>";
+		# Готово
+		echo "</td>";
 	}
 	echo "</tr></table>";
 	# Низ страницы
 	echo "<hr/>
 		<table width=100%><tr>
 		<td valign=top>
-			<a href='syntax.html'>Разметка</a> ";
-	if($pwd)
-		echo "<a href='index.php?logout'>Выйти</a>";
+			<a href='creole_cheat_sheet.html'>Разметка</a> 
+			<a href='admin.php'>Администрирование</a> ";
+	if($use_authorization)
+		echo "<a href='login.php?logout'>Выйти</a>";
 	echo "</td>
 		<td align=right>WikiOne 2012<br/><img src='olympicmovement.png'/></td>
 		</tr></table>";
