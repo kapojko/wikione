@@ -1,15 +1,20 @@
-<html>
-<head>
-	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
-	<link rel='icon' type='image/png' href='chess-knight.png' />
-	<title>WikiOne: Разметка</title>
-</head>
-<body>
-	<h1>WikiOne: Разметка.</h1>
-	Разметка основана на разметке WikiCreole (модуль преобразования
-	заимствован из WabaSabi).
-<table><tr><td>
-<table border=1>
+<html><head><style>
+<!--
+
+body { background-color: white; color: #333; }
+body { font-family: Verdana, Arial, Helvetica, sans-serif; line-height: 1.3em; }
+
+div#MarkupHelp table { margin-bottom: 0; border-top: 3px solid #999; border-left: 3px solid #999; 
+    border-right: 3px solid #BBB; border-bottom: 3px solid #BBB}
+div#MarkupHelp td { font-size: 80%; padding: 0.2em; margin: 0; border: 1px solid #999; border-width: 1px 0 1px 0; 
+  vertical-align: top; white-space: nowrap; }
+div#MarkupHelp td.arrow { padding-right: 5px; padding: 0 0.75em; color: #999; }
+div#MarkupHelp h3 { font-size: 90%; font-weight: bold; margin: 0 0 5px 0; padding: 5px 0 0 0; }
+div#MarkupHelp p { font-size: 70%; }
+-->
+</style></head><script charset="utf-8" id="injection_graph_func" src="creole_cheat_sheet_files/injection_graph_func.js"></script><link href="creole_cheat_sheet_files/injection_graph.css" type="text/css" rel="stylesheet" charset="utf-8" id="injection_graph_css"><body><div id="MarkupHelp">
+  <h3>WikiCreole Cheat Sheet</h3>
+<table cellpadding="0" cellspacing="0">
   <tbody><tr><td>//italics//</td><td class="arrow">&#8594;</td><td><em>italics</em></td></tr>
   <tr><td>**bold**</td><td class="arrow">&#8594;</td><td><strong>bold</strong></td></tr>
 
@@ -28,58 +33,4 @@
   <tr><td>|=|=table|=header|<br>|a|table|row|<br>|b|table|row|</td><td class="arrow">&#8594;</td><td>Table</td></tr>
   <tr><td>{{{<br>== [[Nowiki]]:<br> //**don't** format//<br>}}}</td><td class="arrow">&#8594;</td><td>== [[Nowiki]]:<br> //**don't** format//</td></tr>
 </tbody></table>
-  <b style="font-size: 70%;">www.wikicreole.org</b>
-</td>
-<td valign="top">
-  <ul>
-    <li>Ссылок пока нет;</li>
-	<li>Синтаксис таблиц - упрощённый MediaWiki;</li>
-	<li>Многоуровневые списки не поддерживаются.</li>
-  </ul>
-</td>
-</tr></table>
-
-<pre>
-WabiSabi supports a limited, but hopefully useful set of markup patterns.
-
-== Block-level markup
-
-=== Headings
-==== Over multiple levels
-
-Normal paragraphs.
-
-* lists
-* and lists
-# and numbered lists
-## but no multiple levels
-
-{{{Preformatted text
-(no wiki markup recognized inside).}}}
-
-{|
- |+tables
- |+like in
- |+MediaWiki
- |-
- |1
- |2
- |3
- |}
-----
-Horizontal lines.
-: Block quotes,
-;and finally:definition lists.
-
-== inline markup ==
-
-WikiWords, [http://en.wikipedia.org/wiki/Url labeled external links], bare external links: http://wikipedia.org/ and even pictures:
-\\{{http://felix.plesoianu.ro/pub/media/p1000273.jpg}}
-
-Explicit\\linebreaks, **bold** and //italic//, plus
- ,,subscript,, and ^^superscript^^.
-
-Last but not least, you can have {{{'(inline code fragments)}}}.
-</pre>
-</body>
-</html>
+  <b style="font-size: 70%;">www.wikicreole.org</b></div><div style="position: absolute; left: 0px; top: 0px; width: 16px; height: 16px; visibility: hidden;" id="linkalert-box"><img style="position: absolute; left: 0px; top: 0px;" src="creole_cheat_sheet_files/none-icon.png" id="linkalert-icon"></div></body></html>
