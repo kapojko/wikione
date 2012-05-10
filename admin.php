@@ -30,42 +30,25 @@
 		switch($action) {
 		case 'editsettings':
 			$newtitle=$_POST['title'];
-			$newemail=$_POST['email'];
 			if(!mysql_query("UPDATE {$dbtableprefix}settings SET
-					title='".mysql_real_escape_string($newtitle)."',
-					email='".mysql_real_escape_string($newemail)."'"))
+					title='".mysql_real_escape_string($newtitle)."'"))
 				{ echo "Error: ".mysql_error(); mysql_close(); return; }
 			echo "Изменения сохранены.<br>";
-			break;
-		case 'changepassword':
-			$newpassword=$_POST['newpassword'];
-			if(!mysql_query("UPDATE {$dbtableprefix}settings SET
-					passwordcrypt='".crypt($newpassword)."'"))
-				{ echo "Error: ".mysql_error(); mysql_close(); return; }
-			echo "Пароль изменён.<br>";
 			break;
 		}
 	}
 
 	#Вывод
 	# Настройки
-	$r=mysql_query("SELECT title,email FROM {$dbtableprefix}settings");
+	$r=mysql_query("SELECT title FROM {$dbtableprefix}settings");
 	if(!$r or !($row= mysql_fetch_row($r))) {
 		echo "Error reading settings from DB".mysql_error(); mysql_close(); return;
 	}
 	echo "<h3>Настройки</h3>
 		<form action='admin.php?action=editsettings' method='POST'>
-		Заголовок: <input name='title' type='text' value=".
-		stripslashes($row[0])."></input><br>
-		E-mail: <input name='email' type='text' value=".
-		stripslashes($row[1])."></input><br>
+		Заголовок: <input name='title' type='text' value='".
+		stripslashes($row[0])."'></input><br>
 		<input type='submit' value='Сохранить изменения'></input>
-		</form>";
-	# Смена пароля
-	echo "<h3>Смена пароля</h3>
-		<form action='admin.php?action=changepassword' method='POST'>
-		Новый пароль: <input name='newpassword' type='password'></input><br>
-		<input type='submit' value='Изменить пароль'></input>
 		</form>";
 	# Ссылка на главную страницу
 	echo "<p><a href='index.php'>На главную страницу</a>";

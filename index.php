@@ -25,13 +25,12 @@
 		return;
 	}
 	# Читаем общие настройки
-	$r=mysql_query("SELECT title,email FROM {$dbtableprefix}settings");
+	$r=mysql_query("SELECT title FROM {$dbtableprefix}settings");
 	if(!$r || !mysql_num_rows($r)) {
 		echo "Error reading settings from DB".mysql_error(); mysql_close(); return;
 	}
 	$row=mysql_fetch_row($r);
 	$title=stripslashes($row[0]);
-	$email=stripslashes($row[1]);
 	# Читаем параметры текущего вида
 	if(isset($_GET['groupid'])) {
 		$groupid=$_GET['groupid'];
