@@ -7,3 +7,14 @@ v. 20120301
 -----------
 
 Added cookie-based auto-login for 1 month after successfull authorization.
+
+v. 20120510
+-----------
+
+1. Global code restructurization;
+2. Changed to secure openid authentification (PHP LightOpenID class (c) Mewp);
+3. Added creation/modification time for records;
+4. Added notes (i.e. comments) for records;
+5. Added admin panel (now almost empty);
+6. Changed markup engine for WikiCreole PHP class ((c) Ivan Fomichev);
+7. Fixed bugs.

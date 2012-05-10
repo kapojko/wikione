@@ -23,16 +23,14 @@
 	
 	$query=
 		"CREATE TABLE {$dbtableprefix}settings (
-			title CHAR(50),
-			email CHAR(30),
-			passwordcrypt CHAR(50)
+			title CHAR(50)
 		)";
 	if(!mysql_query($query))
 		{ echo "Error creating table: ".mysql_error(); mysql_close(); return; }
 	$defaultpasswordcrypt=crypt($defaultpassword);
 	$query=
-		"INSERT INTO {$dbtableprefix}settings(title,email,passwordcrypt)
-		VALUES('$defaultname','$defaultemail','$defaultpasswordcrypt')";
+		"INSERT INTO {$dbtableprefix}settings(title)
+		VALUES('$defaulttitle')";
 	if(!mysql_query($query))
 		{ echo "Error: ".mysql_error(); mysql_close(); return; }
 	
@@ -72,14 +70,7 @@
 	<p>Параметры по умолчанию:
 	<table border=1><tr>
 	<td><b>Заголовок</b></td>
-	<td><?php echo $defaultname; ?></td>
-	</tr><tr>
-	<td><b>E-mail</b></td>
-	<td><?php echo $defaultemail; ?></td>
-	</tr><tr>
-	</tr><tr>
-	<td><b>Пароль</b></td>
-	<td><?php echo $defaultpassword; ?></td>
+	<td><?php echo $defaulttitle; ?></td>
 	</tr></table>
 	<p><a href="index.php">Перейти к главной странице</a>
 </body>
