@@ -22,6 +22,9 @@
 		}
 		# Выход из авторизации
 		unset($_SESSION['login']);
+		echo "<script> window.location.reload();
+			</script></body></html>";
+		return;
 	}
 	else {
 		require 'openid.php';
