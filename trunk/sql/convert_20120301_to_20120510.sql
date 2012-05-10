@@ -1,6 +1,9 @@
+USE microtrackdb;
 CREATE TABLE wikione_settings (
 	title CHAR(50)
 );
+INSERT INTO wikione_settings(title)
+	VALUES('Вики-1');
 ALTER TABLE groups
 	RENAME TO wikione_groups;
 ALTER TABLE records
