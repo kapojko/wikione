@@ -10,6 +10,6 @@
 	$dbpwd='rootpwd1';
 	$dbname='microtrackdb';
 	$dbtableprefix='wikione_';
-	$use_authorization=true;
+	$use_authorization=false;
 	$openid='openid.yandex.ru/kapojko';
 ?>

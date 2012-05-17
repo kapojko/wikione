@@ -293,9 +293,11 @@
 		if($row[5] or $row[6]) {
 			echo "<p style='margin-left:20px;font-style:italic'>";
 			if($row[5])
-				echo "Создано ".strftime("%c",strtotime($row[5]))." ";
+				echo "Создано ".strftime("%d %b %Y %H:%M",strtotime($row[5]));
+			if($row[5] and $row[6])
+				echo "; ";
 			if($row[6])
-				echo "Изменено ".strftime("%c",strtotime($row[6]));
+				echo "Изменено ".strftime("%d %b %Y %H:%M",strtotime($row[6]));
 		}
 		# Содержание записи
 		echo $creole->parse(stripslashes($row[4]));
@@ -341,7 +343,8 @@
 		while($row=mysql_fetch_row($r)) {
 			echo "<table style='margin-left:100px;margin-top:5px;margin-bottom:5px; 
 				background-color:#EEEEA4'><tr>
-				<td style='font-style:italic'>".strftime("%c",strtotime($row[1]))."
+				<td style='font-style:italic'>".strftime("%d %b %Y %H:%M",
+				strtotime($row[1]))."
 				<td style='padding-left:20px'>".stripslashes($row[0])."</tr></table>";
 		}
 		# Добавление комментария
