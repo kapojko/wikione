@@ -14,3 +14,24 @@ span.pseudolink {
 	cursor:pointer;
 	color:navy;
 }
+span.star1 { }
+span.star1:after {
+	content:"*";
+	vertical-align:super;
+	font-size:smaller;
+}
+span.star2 { }
+span.star2:after {
+	content:"**";
+	vertical-align:super;
+	font-size:smaller;
+}
+span.star3 {
+	font-weight:bold;
+}
+span.star3:after {
+	content:"***";
+	vertical-align:super;
+	font-size:smaller;
+}
+
