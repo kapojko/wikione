@@ -1,0 +1,16 @@
+a.group { }
+a.activegroup {
+	font-weight:bold;
+	background-color:white;
+	padding:0px 5px;
+	border:1px dotted #806080;
+}
+td.recordlist {
+	background-color:#D4FFD4;
+	vertical-align:top;
+}
+span.pseudolink {
+	border-bottom:1px dotted;
+	cursor:pointer;
+	color:navy;
+}

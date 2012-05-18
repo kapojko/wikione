@@ -7,6 +7,7 @@
 <head>
 	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
 	<link rel='icon' type='image/png' href='chess-knight.png' />
+	<link rel='stylesheet' type='text/css' href='style.css' />
 	<title>WikiOne <?php echo $wikione_version; ?></title>
 </head>
 <body>
@@ -188,22 +189,48 @@
 		<a href='index.php'><img src='chess-knight.png' /></a></td>
 		<td><h1>$title</h1></td></tr></table>";
 	# Список групп
-	echo "<table width=100% bgcolor=#FFD4FF><tr><td>";
+	echo "<table width=100% bgcolor=#FFD4FF><tr valign='top'><td>";
 	$r=mysql_query("SELECT id,name FROM {$dbtableprefix}groups");
 	if(!$r)
 		{ echo "Error: ".mysql_error(); mysql_close(); return; }		
-	while($row=mysql_fetch_row($r))
-		echo "<a href='index.php?groupid={$row[0]}'>".stripslashes($row[1])."</a> ";
-	echo "</td><td align=right>
+	while($row=mysql_fetch_row($r)) {
+		if($groupid and $row[0] == $groupid) # текущая группа
+			echo "<a class='activegroup'";
+		else
+			echo "<a class='group'";
+		echo " href='index.php?groupid={$row[0]}'>".stripslashes($row[1])."</a> ";
+	}
+	echo "</td><td align=right>";
+		if($groupid) {
+			# Ссылка на редактирование группы
+			echo "<span class='pseudolink' 	onclick=
+				'document.getElementById(\"editgroup\").style.display=\"block\"'>
+				Изменить группу</span>";
+		}
+		echo "<span class='pseudolink' onclick=
+			'document.getElementById(\"addgroup\").style.display=\"block\"'>
+			Добавить группу</span>";
+		if($groupid) {
+			# Редактирование группы
+			echo "<div id='editgroup' style='display:none'>
+				<form action='index.php?action=editgroup&groupid=$groupid'
+				method='POST'>
+					<input name='name' type='text' value='".stripslashes($groupname)."'/>
+					<input type='submit' value='Сохранить' />
+				</form></div>";
+		}
+		echo "<div id='addgroup' style='display:none'>
 		<form action='index.php?action=addgroup' method='POST'>
 			<input name='name' type='text'/>
 			<input type='submit' value='Добавить группу'/>
-		</form></td></tr></table>";
+		</form>
+		</div>
+		</td></tr></table>";
 	# Список записей
 	if($recordid)
-		echo "<table width=100%><tr><td bgcolor=#D4FFD4 width=300px valign=top>";
+		echo "<table width=100%><tr><td class='recordlist' width=300px>";
 	else
-		echo "<table align=center><tr><td bgcolor=#D4FFD4>";
+		echo "<table align=center><tr><td class='recordlist'>";
 	echo "<h3>";
 	if($groupid) {
 		echo stripslashes($groupname);
@@ -241,23 +268,7 @@
 				<option value=3>***</option>
 			</select>
 			<input type='submit' value='Добавить запись' />
-		</form>";
-	if($groupid) {
-		# Редактирование группы
-		echo "<div align=right>
-			<a href='#editgroup'
-			onclick=\"javascript:document.getElementById('editgroup').
-			style.display='block'\">
-			Изменить группу</a></div>
-			<div id='editgroup' style='display:none'>
-			<a name='editgroup' />
-			<form action='index.php?action=editgroup&groupid=$groupid'
-			method='POST'>
-				<input name='name' type='text' value='".stripslashes($groupname)."'/>
-				<input type='submit' value='Сохранить' />
-			</form></div>";
-	}
-	echo "</td>";
+		</form></td>";
 	# Текущая запись
 	if($recordid) {
 		echo "<td bgcolor=#FFFFD4 valign=top>";
@@ -303,13 +314,12 @@
 		echo $creole->parse(stripslashes($row[4]));
 		# Редактирование
 		echo "<div align=right>
-			<a href='#editrecord'
-			onclick=\"javascript:document.getElementById('editrecord').
-			style.display='block'\">
-			Редактировать</a></div>
+			<span class='pseudolink' onclick=
+			'javascript:document.getElementById(\"editrecord\").
+			style.display=\"block\"'>
+			Редактировать</span></div>
 			<div id='editrecord' style='display:".
 			($action == 'addrecord' ? 'block' : 'none')."'>
-			<a name='editrecord' />
 			<form action='index.php?action=editrecord&recordid=$recordid".
 			($groupid ? "&groupid=$groupid" : "")."' method='POST'>
 			<input name='title' type='text' size=70 value='{$row[2]}' />
