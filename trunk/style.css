@@ -1,3 +1,8 @@
+div.pagetitle {
+	margin:20 40;
+	font-family:fantasy;
+	font-size:xx-large;
+}
 table.groups {
 	border-bottom:1 solid;
 	margin-bottom:20;
@@ -19,10 +24,11 @@ td.recordlist {
 	vertical-align:top;
 	padding-right:20;
 }
-div.pagetitle {
-	margin:20 40;
-	font-family:fantasy;
-	font-size:xx-large;
+div.indexrecordlist {
+	text-align:left;
+	-webkit-column-count:3;
+	   -moz-column-count:3;
+	        column-count:3;
 }
 span.pseudolink {
 	border-bottom:1px dotted;
@@ -52,7 +58,9 @@ span.star3:after {
 div.record {
 	margin:10 10;
 	padding:20 20;
-	border-radius:10;
+	-webkit-border-radius:10;
+	   -moz-border-radius:10;
+			border-radius:10;	
 	border:solid 2px #CC9999;
 }
 div.recordtitle {
@@ -67,7 +75,4 @@ div.recordtext {
 }
 div.comment {
 	margin:10 0 10 100;
-}
-div.blognavigation {
-	text-align:center;
 }
