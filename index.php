@@ -17,10 +17,7 @@
 	# Шапка
 	out_header($groupid);
 	# Список записей
-	if($recordid)
-		echo "<table width=100%><tr><td class='recordlist' width=300px>";
-	else
-		echo "<table align=center><tr><td class='recordlist'>";
+	echo "<div class='indexrecordlist'>";
 	$query="SELECT id,title,star FROM {$dbtableprefix}records WHERE star<10";
 	if($groupid) {
 		$query=$query." AND groupid=$groupid";
@@ -35,8 +32,7 @@
 			"recordid={$row[0]}'><span class='star{$row[2]}'>
 			".stripslashes($row[1])."</span></a></li>";
 	}
-	echo "</ol></td>
-		</tr></table>";
+	echo "</ol></div>";
 	# Низ страницы
 	out_footer();
 	# Готово

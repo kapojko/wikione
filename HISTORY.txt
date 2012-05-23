@@ -19,7 +19,10 @@ v. 20120510
 6. Changed markup engine for WikiCreole PHP class ((c) Ivan Fomichev);
 7. Fixed bugs.
 
-v. 2012
+v. 20120523
 -----------
 
-* Added "--AAA--" pattern (overstrike);
+* Added "--AAA--" wiki pattern (overstrike);
+* Global redisign;
+* Splitted to 4 files: "index", "record', "action" and "included" "common";
+* Styled through CSS.

@@ -105,11 +105,10 @@ function out_header($groupid=0) {
 			"&groupid=$groupid" : "")."' method='POST' style='margin-top:7px'>
 			<input name='title' type='text' size=30 />
 			<select name='star'/>
-				<option value=0 selected>Заметка</option>
-				<option value=1>Дело *</option>
-				<option value=2>Дело **</option>
-				<option value=3>Дело ***</option>
-				<option value=10>Блог</option>
+				<option value=0 selected> </option>
+				<option value=1>*</option>
+				<option value=2>**</option>
+				<option value=3>***</option>
 			</select>
 			<input type='submit' value='Добавить запись' />
 		</form>
@@ -176,11 +175,10 @@ function out_record($recordid) {
 		($groupid ? "&groupid=$groupid" : "")."' method='POST'>
 		<input name='title' type='text' size=70 value='{$row[2]}' />
 		<select name='star'/>
-			<option value=0 ".($row[3] == 0 ? 'selected' : '').">Заметка</option>
-			<option value=1 ".($row[3] == 1 ? 'selected' : '').">Дело *</option>
-			<option value=2 ".($row[3] == 2 ? 'selected' : '').">Дело **</option>
-			<option value=3 ".($row[3] == 3 ? 'selected' : '').">Дело ***</option>
-			<option value=10 ".($row[3] == 10 ? 'selected' : '').">Блог</option>
+			<option value=0 ".($row[3] == 0 ? 'selected' : '')."> </option>
+			<option value=1 ".($row[3] == 1 ? 'selected' : '').">*</option>
+			<option value=2 ".($row[3] == 2 ? 'selected' : '').">**</option>
+			<option value=3 ".($row[3] == 3 ? 'selected' : '').">***</option>
 		</select>
 		<select name='groupid' />
 			<option value=0 ".(!$groupid1 ? 'selected' : '')." />";
