@@ -42,135 +42,20 @@ $creole = new creole(
 	)
 );
 # Функции
-
-# Обработка действия
-function process_action($action,$groupid=0,$recordid=0) {
-	global $dbtableprefix;
-	switch($action) {
-	case 'addgroup':
-		$newgroupname=$_POST['name'];
-		if($newgroupname) {
-			if(!mysql_query("INSERT INTO {$dbtableprefix}groups SET name='".
-				mysql_real_escape_string($newgroupname)."'"))
-				{ echo "Error: ".mysql_error(); mysql_close(); return; }
-			echo "Группа $newgroupname добавлена.<br>";
-			$r=mysql_query("SELECT LAST_INSERT_ID() FROM {$dbtableprefix}groups");
-			if(!$r || !mysql_num_rows($r))
-				{ echo "Error: ".mysql_error(); mysql_close(); return; }
-			$row=mysql_fetch_row($r);
-			$groupid=$row[0];
-			$groupname=$newgroupname;
-		}
-		else {
-			echo "Имя группы не задано!<br>";
-		}
-		break;
-	case 'editgroup':
-		if(!$groupid)
-			{ echo "Error: group id is not given"; mysql_close(); return; }
-		$newgroupname=$_POST['name'];
-		if($newgroupname) { # переименование
-			if(!mysql_query("UPDATE {$dbtableprefix}groups SET name='".
-					mysql_real_escape_string($newgroupname)."' 
-					WHERE id=$groupid"))
-				{ echo "Error: ".mysql_error(); mysql_close(); return; }
-			echo "Группа переименована.<br>";
-			$groupname=$newgroupname;
-		}
-		else { # Удаление
-			$r=mysql_query("SELECT id FROM {$dbtableprefix}records
-				WHERE groupid=$groupid");
-			if(!$r)
-				{ echo "Error: ".mysql_error(); mysql_close(); return; }
-			if(mysql_num_rows($r)) {
-				echo "Удалить можно тольку пустую группу!<br>";
-			}
-			else {
-				if(!mysql_query("DELETE FROM {$dbtableprefix}groups 
-						WHERE id=$groupid"))
-					{ echo "Error: ".mysql_error(); mysql_close(); return; }
-				echo "Группа удалена<br>";
-				$groupid=0;
-			}
-		}
-		break;
-	case 'addrecord':
-		$newrecordtitle=$_POST['title'];
-		if($newrecordtitle) {
-			$newrecordstar=$_POST['star'];
-			$query="INSERT INTO {$dbtableprefix}records SET
-				title='".mysql_real_escape_string($newrecordtitle)."',
-				star='$newrecordstar',
-				created=NOW()";
-			if($groupid)
-				$query=$query.",groupid=$groupid";
-			if(!mysql_query($query))
-				{ echo "Error: ".mysql_error(); mysql_close(); return; }
-			echo "Запись добавлена.<br>";
-			$r=mysql_query("SELECT LAST_INSERT_ID() FROM {$dbtableprefix}records");
-			if(!$r || !mysql_num_rows($r))
-				{ echo "Error: ".mysql_error(); mysql_close(); return; }
-			$row=mysql_fetch_row($r);
-			$recordid=$row[0];
-		}
-		else {
-			echo "Заголовок записи не задан!<br>";
-		}
-		break;
-	case 'editrecord':
-		if(!$recordid)
-			{ echo "Error: record id is not given"; mysql_close(); return; }
-		$newrecordtitle=$_POST['title'];
-		if($newrecordtitle) { # изменение
-			$query="UPDATE {$dbtableprefix}records SET groupid='{$_POST['groupid']}',
-				title='".mysql_real_escape_string($newrecordtitle)."',
-				star='{$_POST['star']}',
-				text='".mysql_real_escape_string($_POST['text'])."',
-				modified=NOW()
-				WHERE id=$recordid";
-			if(!mysql_query($query))
-				{ echo "Error: ".mysql_error(); mysql_close(); return; }
-			echo "Запись изменена.<br>";
-		}
-		else { # Удаление
-			if($_POST['text'])
-				echo "Удалить можно тольку запись без текста!<br>";
-			else {
-				if(!mysql_query("DELETE FROM {$dbtableprefix}records
-						WHERE id=$recordid"))
-					{ echo "Error: ".mysql_error(); mysql_close(); return; }
-				echo "Запись удалена<br>";
-				$recordid=0;
-			}
-		}
-		break;
-	case 'addnote':
-		if(!$recordid)
-			{ echo "Error: record id is not given"; mysql_close(); return; }
-		$notetext=$_POST['text'];
-		if($notetext) {
-			$query="INSERT INTO {$dbtableprefix}notes(recordid,text,created)
-				VALUES('$recordid',
-				'".mysql_real_escape_string($notetext)."',
-				NOW())";
-			if(!mysql_query($query))
-				{ echo "Error: ".mysql_error(); mysql_close(); return; }
-			echo "Комментарий добавлен.<br>";
-		}
-		else {
-			echo "Текст комментарий не задан!<br>";
-		}
-		break;
-	}
-}
-
 # Вывод заголовка
 function out_header($groupid=0) {
 	global $title,$dbtableprefix;
+	# Выводим сообщение, если есть.
+	if(isset($_POST['result']) and isset($_POST['message'])) {
+		$result=$_POST['result'];
+		$message=$_POST['message'];
+		if(!$result)
+			echo "ОШИБКА: ";
+		echo $message."<br/>";
+	}
 	# Заголовок
 	echo "<div class='pagetitle'>
-		<a href='index.php'>$title</a>
-		<a href='blog.php'>Блог</a>
+		<a href='index.php'>$title</a>		
 		</div>";
 	# Список групп
 	echo "<table width=100% class='groups'><tr valign='top'><td>";
@@ -203,20 +88,20 @@ function out_header($groupid=0) {
 	if($groupid) {
 		# Редактирование группы
 		echo "<div id='editgroup' style='display:none'>
-			<form action='index.php?action=editgroup&groupid=$groupid'
+			<form action='action.php?action=editgroup&groupid=$groupid'
 			method='POST'>
 				<input name='name' type='text' value='$groupname'/>
 				<input type='submit' value='Сохранить' />
 			</form></div>";
 	}
 	echo "<div id='addgroup' style='display:none'>
-		<form action='index.php?action=addgroup' method='POST'>
+		<form action='action.php?action=addgroup' method='POST'>
 			<input name='name' type='text'/>
 			<input type='submit' value='Добавить группу'/>
 		</form>
 		</div>
 		<div id='addrecord' style='display:none'>
-		<form action='index.php?action=addrecord".($groupid ?
+		<form action='action.php?action=addrecord".($groupid ?
 			"&groupid=$groupid" : "")."' method='POST' style='margin-top:7px'>
 			<input name='title' type='text' size=30 />
 			<select name='star'/>
@@ -287,7 +172,7 @@ function out_record($recordid) {
 		</div>
 		<div id='editrecord' style='display:".
 		($action == 'addrecord' ? 'block' : 'none')."'>
-		<form action='record.php?action=editrecord&recordid=$recordid".
+		<form action='action.php?action=editrecord&recordid=$recordid".
 		($groupid ? "&groupid=$groupid" : "")."' method='POST'>
 		<input name='title' type='text' size=70 value='{$row[2]}' />
 		<select name='star'/>
@@ -326,7 +211,7 @@ function out_record($recordid) {
 	}
 	# Добавление комментария
 	echo "<div id='addnote' align=right style='display:none; margin-top:5px'>
-		<form action='record.php?action=addnote&recordid=$recordid".
+		<form action='action.php?action=addnote&recordid=$recordid".
 		($groupid ? "&groupid=$groupid" : "")."' method='POST'>
 		<textarea name='text' cols=40 rows=5></textarea><br>
 		<input type='submit' value='Комментировать' />
