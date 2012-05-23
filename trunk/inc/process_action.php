@@ -1,4 +1,9 @@
 <?php
+# Авторизация
+if($use_authorization && !isset($_SESSION['login'])) {
+	echo "Error. No authorization.";
+	return;
+}
 if(isset($_GET['action'])) {
 	$action=$_GET['action'];
 	switch($action) {

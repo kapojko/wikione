@@ -1,18 +1,33 @@
+table.groups {
+	border-bottom:1 solid;
+	margin-bottom:20;
+}
+table.groups a:link {
+	color:#445E96;
+}
+table.groups a:visited {
+	color:#774496;
+}
 a.group { }
 a.activegroup {
 	font-weight:bold;
-	background-color:white;
+	background-color:lightgray;
 	padding:0px 5px;
-	border:1px dotted #806080;
+	border:1px dotted;
 }
 td.recordlist {
-	background-color:#D4FFD4;
 	vertical-align:top;
+	padding-right:20;
+}
+div.pagetitle {
+	margin:20 40;
+	font-family:fantasy;
+	font-size:xx-large;
 }
 span.pseudolink {
 	border-bottom:1px dotted;
 	cursor:pointer;
-	color:navy;
+	color:#445E96;
 }
 span.star1 { }
 span.star1:after {
@@ -34,4 +49,25 @@ span.star3:after {
 	vertical-align:super;
 	font-size:smaller;
 }
-
+div.record {
+	margin:10 10;
+	padding:20 20;
+	border-radius:10;
+	border:solid 2px #CC9999;
+}
+div.recordtitle {
+	font-size:x-large;
+	margin:10;
+}
+div.recorddate {
+	font-style:italic;
+	padding:0 15;
+}
+div.recordtext {
+}
+div.comment {
+	margin:10 0 10 100;
+}
+div.blognavigation {
+	text-align:center;
+}

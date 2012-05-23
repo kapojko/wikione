@@ -441,6 +441,11 @@ class creole {
                        '((?!' . $rx['uri_prefix'] . ')[^\/~])*)*)(\/\/|\n|$)/',
                 'capture' => 1
             ),
+            's' => array(
+                'tag' => 's',
+                'regex' => '/--([^\-]*((-(?!-)|~(.|(?=\n)|$))[^\-~]*)*)(\-\-|\n|$)/',
+                'capture' => 1
+            ),
 
             'img' => new creole_rule_image(array(
                 'regex' => '/' . $rx['image'] . '/',
@@ -512,9 +517,10 @@ class creole {
         $g['h1']['children'] = $g['h2']['children'] = $g['h3']['children'] =
                 $g['h4']['children'] = $g['h5']['children'] = $g['h6']['children'] =
                 $g['single_line']['children'] = $g['text']['children'] = $g['p']['children'] =
-                $g['strong']['children'] = $g['em']['children'] =
+                $g['strong']['children'] = $g['em']['children'] = $g['s']['children'] = 
             array(
-                &$g['escaped_sequence'], &$g['strong'], &$g['em'], &$g['br'], &$g['raw_uri'],
+                &$g['escaped_sequence'], &$g['strong'], &$g['em'], &$g['s'],
+                &$g['br'], &$g['raw_uri'],
                 &$g['named_uri'], &$g['named_interwiki_link'], &$g['named_link'],
                 &$g['unnamed_uri'], &$g['unnamed_interwiki_link'], &$g['unnamed_link'],
                 &$g['tt'], &$g['img']
