@@ -18,3 +18,8 @@ v. 20120510
 5. Added admin panel (now almost empty);
 6. Changed markup engine for WikiCreole PHP class ((c) Ivan Fomichev);
 7. Fixed bugs.
+
+v. 2012
+-----------
+
+* Added "--AAA--" pattern (overstrike);
