@@ -25,7 +25,7 @@
 	if($groupid) {
 		$query=$query." AND groupid=$groupid";
 	}
-	$query=$query." ORDER BY star DESC";
+	$query=$query." ORDER BY star DESC,modified DESC";
 	$r=mysql_query($query);
 	if(!$r)
 		{ echo "Error: ".mysql_error(); mysql_close(); return; }		
