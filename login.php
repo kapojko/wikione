@@ -33,7 +33,7 @@
 			if(!$lopenid->mode) {
 				# Начало авторизации
 				$lopenid->identity = $openid;
-				$lopenid->realm= 'http://' . $domain_no_punicode;
+				$lopenid->realm= 'http://' . $domain_punicode;
 				$lopenid->returnUrl = $lopenid->realm . $_SERVER['REQUEST_URI'];
 				# The following two lines request email, full name, and a nickname
 				# from the provider. Remove them if you don't need that data.
