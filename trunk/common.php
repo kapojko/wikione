@@ -173,7 +173,7 @@ function out_record($recordid) {
 		($action == 'addrecord' ? 'block' : 'none')."'>
 		<form action='action.php?action=editrecord&recordid=$recordid".
 		($groupid ? "&groupid=$groupid" : "")."' method='POST'>
-		<input name='title' type='text' size=70 value='{$row[2]}' />
+		<input name='title' type='text' size=70 value='".stripslashes($row[2])."' />
 		<select name='star'/>
 			<option value=0 ".($row[3] == 0 ? 'selected' : '')."> </option>
 			<option value=1 ".($row[3] == 1 ? 'selected' : '').">*</option>
