@@ -5,6 +5,7 @@
 	$defaulttitle='Вики-1';
 	# Конфигурация
 	$domain='localhost:8081';
+	$domain_no_punicode=$domain;
 	$dbhost='localhost';
 	$dbuser='root';
 	$dbpwd='rootpwd1';
