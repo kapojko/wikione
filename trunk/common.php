@@ -93,7 +93,7 @@ function out_header($groupid=0) {
 				<input name='name' id='edit_group_name' type='text' value='$groupname'/>
 				<span class='pseudolink' onclick=
 					'document.getElementById(\"edit_group_name\").value=\"\"'>
-					X</span>
+					Очистить</span>
 				<input type='submit' value='Сохранить' />
 			</form></div>";
 	}
@@ -197,7 +197,7 @@ function out_record($recordid) {
 		<span class='pseudolink' onclick='
 			document.getElementById(\"edit_record_title_$recordid\").value=\"\",
 			document.getElementById(\"edit_record_text_$recordid\").value=\"\"'>
-			X</span>
+			Очистить</span>
 		<br/>
 		<textarea name='text' id='edit_record_text_$recordid' cols=60 rows=10
 			style='margin-top:7px;margin-bottom:7px'>";
