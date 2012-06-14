@@ -90,7 +90,10 @@ function out_header($groupid=0) {
 		echo "<div id='editgroup' style='display:none'>
 			<form action='action.php?action=editgroup&groupid=$groupid'
 			method='POST'>
-				<input name='name' type='text' value='$groupname'/>
+				<input name='name' id='edit_group_name' type='text' value='$groupname'/>
+				<span class='pseudolink' onclick=
+					'document.getElementById(\"edit_group_name\").value=\"\"'>
+					X</span>
 				<input type='submit' value='Сохранить' />
 			</form></div>";
 	}
@@ -173,7 +176,8 @@ function out_record($recordid) {
 		($action == 'addrecord' ? 'block' : 'none')."'>
 		<form action='action.php?action=editrecord&recordid=$recordid".
 		($groupid ? "&groupid=$groupid" : "")."' method='POST'>
-		<input name='title' type='text' size=70 value='".stripslashes($row[2])."' />
+		<input name='title' id='edit_record_title_$recordid' type='text'
+			size=70 value='".stripslashes($row[2])."' />
 		<select name='star'/>
 			<option value=0 ".($row[3] == 0 ? 'selected' : '')."> </option>
 			<option value=1 ".($row[3] == 1 ? 'selected' : '').">*</option>
@@ -189,8 +193,13 @@ function out_record($recordid) {
 		echo "<option value={$row2[0]} ".
 			($groupid1 == $row2[0] ? 'selected' : '').">
 			".stripslashes($row2[1])."</option>";
-	echo "</select><br/>
-		<textarea name='text' cols=60 rows=10
+	echo "</select>
+		<span class='pseudolink' onclick='
+			document.getElementById(\"edit_record_title_$recordid\").value=\"\",
+			document.getElementById(\"edit_record_text_$recordid\").value=\"\"'>
+			X</span>
+		<br/>
+		<textarea name='text' id='edit_record_text_$recordid' cols=60 rows=10
 			style='margin-top:7px;margin-bottom:7px'>";
 	echo stripslashes($row[4]);
 	echo "</textarea><br />
