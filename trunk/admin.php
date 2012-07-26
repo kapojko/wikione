@@ -1,57 +1,59 @@
-<?php 
-	include('config.php');
-	if($use_authorization)
-		session_start();
-?>
-<html>
-<head>
-	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
-	<link rel='icon' type='image/png' href='chess-knight.png' />
-	<title><?php echo "$title"; ?></title>
-</head>
-<body>
 <?php
-	# Подключение к БД
-	if(!mysql_connect($dbhost,$dbuser,$dbpwd))
-		{ echo "Error connecting DB: ".mysql_error(); return; }
-	mysql_query("SET NAMES utf8");
-	if(!mysql_select_db($dbname))
-		{ echo "Error selecting DB".mysql_error(); mysql_close(); return; }
-	# Авторизация
-	if($use_authorization && !isset($_SESSION['login'])) {
-		echo "<script>
-			window.location.href='login.php';
-			</script></body></html>";
-		return;
-	}
-	# Выполнение действий
-	if(isset($_GET['action'])) {
-		$action=$_GET['action'];
-		switch($action) {
-		case 'editsettings':
-			$newtitle=$_POST['title'];
-			if(!mysql_query("UPDATE {$dbtableprefix}settings SET
-					title='".mysql_real_escape_string($newtitle)."'"))
-				{ echo "Error: ".mysql_error(); mysql_close(); return; }
-			echo "Изменения сохранены.<br>";
-			break;
-		}
-	}
+include('config.php');
+include('common.php');
 
-	#Вывод
-	# Настройки
-	$r=mysql_query("SELECT title FROM {$dbtableprefix}settings");
-	if(!$r or !($row= mysql_fetch_row($r))) {
-		echo "Error reading settings from DB".mysql_error(); mysql_close(); return;
+if ($use_authorization && !check_authorization()) {
+	return;
+}
+# Подключение к БД
+if (!connect_to_db($dbhost, $dbuser, $dbpwd, $dbname)) {
+	return;
+}
+
+# Выполнение действий
+if (isset($_GET['action'])) {
+	$action = $_GET['action'];
+	switch ($action) {
+		case 'editsettings':
+			$newtitle = $_POST['title'];
+			if (!mysql_query("UPDATE {$dbtableprefix}settings SET
+					pvalue='" . mysql_real_escape_string($newtitle) . "'
+					WHERE pkey='title'")) {
+				echo "Error: " . mysql_error();
+				return;
+			}
+			$newmaxindexnotes= $_POST['maxindexnotes'];
+			if (!mysql_query("UPDATE {$dbtableprefix}settings SET
+					pvalue='" . mysql_real_escape_string($maxindexnotes) . "'
+					WHERE pkey='maxindexnotes'")) {
+				echo "Error: " . mysql_error();
+				return;
+			}
+			$message = "Изменения сохранены.";
+			break;
 	}
-	echo "<h3>Настройки</h3>
-		<form action='admin.php?action=editsettings' method='POST'>
-		Заголовок: <input name='title' type='text' value='".
-		stripslashes($row[0])."'></input><br>
-		<input type='submit' value='Сохранить изменения'></input>
-		</form>";
-	# Ссылка на главную страницу
-	echo "<p><a href='index.php'>На главную страницу</a>";
+}
+# Читаем настройки
+$settings = load_settings($dbtableprefix);
+$title = $settings['title'];
+$maxindexnotes = $settings['maxindexnotes'];
+
+#Вывод
+out_html_header("WikiOne $wikione_version");
+if ($message) {
+	echo $message . "<br>";
+}
+# Настройки
 ?>
+<h3>Настройки</h3>
+<form action='admin.php?action=editsettings' method='POST'>
+	Заголовок: <input name='title' type='text' value=
+		'<?php echo $title; ?>'></input><br>
+	Количество записей на главной странице:
+	<input name='maxindexnotes' type='text' value=
+		'<?php echo $maxindexnotes; ?>'></input><br>
+	<input type='submit' value='Сохранить изменения'></input>
+</form>
+<p><a href='index.php'>На главную страницу</a>
 </body>
 </html>

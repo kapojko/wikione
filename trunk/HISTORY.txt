@@ -26,3 +26,11 @@ v. 20120523
 * Global redisign;
 * Splitted to 4 files: "index", "record', "action" and "included" "common";
 * Styled through CSS.
+
+v. 20120727
+-----------
+
+* Code restructurization;
+* Redesigned "settings" table;
+* Divided all records in index page to "tasks" and "notes" (with according links);
+* Added max entry number for an index page and links within pages (1 2 3 ...)
