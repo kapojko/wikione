@@ -24,16 +24,30 @@ td.recordlist {
 	vertical-align:top;
 	padding-right:20;
 }
+div.indexmode {
+	text-align: center;
+	margin: 20px 0;
+}
 div.indexrecordlist {
 	text-align:left;
 	-webkit-column-count:3;
 	   -moz-column-count:3;
 	        column-count:3;
 }
+div.pagelist {
+	text-align: center;
+	margin: 20px 100px;
+}
+a.pagelink {
+	
+}
 span.pseudolink {
 	border-bottom:1px dotted;
 	cursor:pointer;
 	color:#445E96;
+}
+s.smalllink {
+	font-size: small;
 }
 span.star1 { }
 span.star1:after {

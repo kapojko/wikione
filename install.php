@@ -1,48 +1,55 @@
-<?php 
-	include('config.php');
-?>
-<html>
-<head>
-	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
-	<link rel='icon' type='image/png' href='chess-knight.png' />
-	<title>Установка WikiOne <?php echo $wikione_version; ?></title>
-</head>
-<body>
 <?php
-	# Подключение к БД
-	if(!mysql_connect($dbhost,$dbuser,$dbpwd))
-		{ echo "Error connecting DB: ".mysql_error(); return; }
-	mysql_query("SET NAMES utf8");
-	if(!mysql_select_db($dbname))
-		{ echo "Error selecting DB".mysql_error(); mysql_close(); return; }
-		/*$query="CREATE DATABASE $dbname CHARACTER SET utf8";
-		if(!mysql_query($query))
-			{ echo "Error creating DB: ".mysql_error(); mysql_close(); return; }
-		if(!mysql_select_db($dbname))
-			{ echo "Error selecting DB".mysql_error(); mysql_close(); return; }*/
-	
-	$query=
+include('config.php');
+include('common.php');
+
+if ($use_authorization && !check_authorization()) {
+	return;
+}
+# Подключение к БД
+if (!connect_to_db($dbhost, $dbuser, $dbpwd, $dbname)) {
+	return;
+}
+# Читаем настройки
+$settings = load_settings($dbtableprefix);
+$title = $settings['title'];
+# Подключаем движок Вики
+$creole = load_wiki_engine();
+
+/* $query="CREATE DATABASE $dbname CHARACTER SET utf8";
+  if(!mysql_query($query))
+  { echo "Error creating DB: ".mysql_error(); return; }
+  if(!mysql_select_db($dbname))
+  { echo "Error selecting DB".mysql_error(); return; } */
+
+$query =
 		"CREATE TABLE {$dbtableprefix}settings (
-			title CHAR(50)
+			pkey CHAR(50) NOT NULL,
+			pvalue VARCHAR(255)
 		)";
-	if(!mysql_query($query))
-		{ echo "Error creating table: ".mysql_error(); mysql_close(); return; }
-	$defaultpasswordcrypt=crypt($defaultpassword);
-	$query=
+if (!mysql_query($query)) {
+	echo "Error creating table: " . mysql_error();
+	return;
+}
+$defaultpasswordcrypt = crypt($defaultpassword);
+$query =
 		"INSERT INTO {$dbtableprefix}settings(title)
 		VALUES('$defaulttitle')";
-	if(!mysql_query($query))
-		{ echo "Error: ".mysql_error(); mysql_close(); return; }
-	
-	$query=
+if (!mysql_query($query)) {
+	echo "Error: " . mysql_error();
+	return;
+}
+
+$query =
 		"CREATE TABLE {$dbtableprefix}groups (
 			id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 			name CHAR(30) NOT NULL
 		)";
-	if(!mysql_query($query))
-		{ echo "Error creating table: ".mysql_error(); mysql_close(); return; }
-	
-	$query=
+if (!mysql_query($query)) {
+	echo "Error creating table: " . mysql_error();
+	return;
+}
+
+$query =
 		"CREATE TABLE {$dbtableprefix}records (
 			id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 			groupid INTEGER,
@@ -52,26 +59,36 @@
 			created DATETIME,
 			modified DATETIME
 		)";
-	if(!mysql_query($query))
-		{ echo "Error creating table: ".mysql_error(); mysql_close(); return; }
+if (!mysql_query($query)) {
+	echo "Error creating table: " . mysql_error();
+	return;
+}
 
-	$query=
+$query =
 		"CREATE TABLE {$dbtableprefix}notes (
 			id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 			recordid INTEGER,
 			text TEXT,
 			created DATETIME
 		)";
-	if(!mysql_query($query))
-		{ echo "Error creating table: ".mysql_error(); mysql_close(); return; }
-
+if (!mysql_query($query)) {
+	echo "Error creating table: " . mysql_error();
+	return;
+}
 ?>
-	Установка завершена.
-	<p>Параметры по умолчанию:
-	<table border=1><tr>
-	<td><b>Заголовок</b></td>
-	<td><?php echo $defaulttitle; ?></td>
-	</tr></table>
-	<p><a href="index.php">Перейти к главной странице</a>
-</body>
+<html>
+	<head>
+		<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+		<link rel='icon' type='image/png' href='chess-knight.png' />
+		<title>Установка WikiOne <?php echo $wikione_version; ?></title>
+	</head>
+	<body>
+		Установка завершена.
+		<p>Параметры по умолчанию:
+		<table border=1><tr>
+				<td><b>Заголовок</b></td>
+				<td><?php echo $defaulttitle; ?></td>
+			</tr></table>
+		<p><a href="index.php">Перейти к главной странице</a>
+	</body>
 </html>
