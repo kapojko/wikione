@@ -49,7 +49,7 @@ if ($message) {
 <form action='admin.php?action=editsettings' method='POST'>
 	Заголовок: <input name='title' type='text' value=
 		'<?php echo $title; ?>'></input><br>
-	Количество записей на главной странице:
+	Количество записей в списке:
 	<input name='maxindexnotes' type='text' value=
 		'<?php echo $maxindexnotes; ?>'></input><br>
 	<input type='submit' value='Сохранить изменения'></input>

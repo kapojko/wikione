@@ -14,7 +14,7 @@ table.groups a:visited {
 	color:#774496;
 }
 a.group { }
-a.activegroup {
+span.selected {
 	font-weight:bold;
 	background-color:lightgray;
 	padding:0px 5px;

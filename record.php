@@ -13,50 +13,46 @@ if (!connect_to_db($dbhost, $dbuser, $dbpwd, $dbname)) {
 # Читаем настройки
 $settings = load_settings($dbtableprefix);
 $title = $settings['title'];
+$maxindexnotes = $settings['maxindexnotes'];
 # Подключаем движок Вики
 $creole = load_wiki_engine();
 
 # Читаем параметры текущего вида
-if (isset($_GET['groupid'])) {
-	$groupid = $_GET['groupid'];
-}
-else
-	$groupid = 0;
-if (isset($_GET['recordid']))
+if (isset($_GET['recordid'])) {
 	$recordid = $_GET['recordid'];
-else
-	$recordid = 0;
-$mode = 'tasks';
+} else {
+	echo "Не передан идентификатор записи.";
+	return;
+}
+$r = mysql_query("SELECT groupid, star FROM {$dbtableprefix}records " .
+		"WHERE id = $recordid");
+$row = mysql_fetch_row($r);
+$groupid = $row[0];
+$mode = ($row[1] > 0 && $row[1] < 10) ? 'tasks' : 'notes';
 
 # Выводим страницу
 out_html_header($title);
 # Шапка
 out_header($groupid, $mode);
-#
-if (!$recordid) {
-	echo "Не передан идентификатор записи.";
-	return;
-}
+
 # Список записей
 echo "<table width=100%><tr><td class='recordlist' width=300px>";
-$query = "SELECT id,title,star FROM {$dbtableprefix}records " .
-		"WHERE star > 0 AND star < 10";
-if ($groupid) {
-	$query = $query . " AND groupid=$groupid";
-}
-$query = $query . " ORDER BY star DESC,modified DESC";
+# подсчитываем общее количество записей
+$totalcount = get_total_record_count($groupid, $mode);
+# Читаем список записей
+$query = get_record_list_query($groupid, $mode, 0, $maxindexnotes);
 $r = mysql_query($query);
-if (!$r) {
-	echo "Error: " . mysql_error();
-	return;
-}
 echo "<ol>";
 while ($row = mysql_fetch_row($r)) {
 	echo "<li><a href='record.php?" . ($groupid ? "groupid=$groupid&" : "") .
 	"recordid={$row[0]}'><span class='star{$row[2]}'>
 			" . stripslashes($row[1]) . "</span></a></li>";
 }
-echo "</ol></td>";
+echo "</ol>";
+if ($totalcount > $maxindexnotes) {
+	echo "<p>…</p>";
+}
+echo "</td>";
 # Текущая запись
 echo "<td valign=top>";
 out_record($recordid);
