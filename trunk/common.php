@@ -65,6 +65,17 @@ function out_html_header($title) {
 		<body>";
 }
 
+# Вывод возможно выбранного текста
+function out_selected($text, $selected) {
+	if ($selected) {
+		echo "<span class='selected'>";
+	}
+	echo $text;
+	if ($selected) {
+		echo "</span>";
+	}
+}
+
 # Вывод заголовка
 
 function out_header($groupid, $mode) {
@@ -89,14 +100,10 @@ function out_header($groupid, $mode) {
 		return;
 	}
 	while ($row = mysql_fetch_row($r)) {
-		if ($groupid and $row[0] == $groupid) { # текущая группа
-			echo "<a class='activegroup'";
-			$groupname = stripslashes($row[1]);
-		} else {
-			echo "<a class='group'";
-		}
-		echo " href='index.php?groupid={$row[0]}&mode=$mode'>" .
-				stripslashes($row[1]) . "</a> ";
+		$curgroupname = stripslashes($row[1]);
+		echo "<a class='group' href='index.php?groupid={$row[0]}&mode=$mode'>";
+		out_selected($curgroupname, $groupid and $row[0] == $groupid);
+		echo "</a> ";
 	}
 	echo "</td><td align=right>";
 	if ($groupid) {
@@ -144,6 +151,52 @@ function out_header($groupid, $mode) {
 		</form>
 		</div>
 		</td></tr></table>";
+}
+
+# Подсчёт числа записей
+function get_total_record_count($groupid, $mode) {
+	global $dbtableprefix;
+	
+	$query = "SELECT COUNT(id) FROM {$dbtableprefix}records " .
+		"WHERE " .
+		(($mode == 'tasks') ? "star > 0 AND star < 10" : "star = 0") .
+		($groupid ? " AND groupid=$groupid" : "");
+	$r = mysql_query($query);
+	$row = mysql_fetch_row($r);
+	$totalcount = $row[0];
+	
+	return $totalcount;
+}
+
+# Получение строки запроса для вывода списка записей
+function get_record_list_query($groupid, $mode, $start, $limit) {
+	global $dbtableprefix;
+	
+	$query = "SELECT id,title,star FROM {$dbtableprefix}records " . 
+			"WHERE " .
+			(($mode == 'tasks') ? "star > 0 AND star < 10 " : "star = 0 ") .
+			($groupid ? " AND groupid=$groupid" : "") .
+			"ORDER BY " .
+			(($mode == 'tasks') ? "star DESC, modified DESC " : "title ASC ") .
+			"LIMIT $start,$limit";
+	if ($mode == 'tasks') {
+		$query = "SELECT id,title,star FROM {$dbtableprefix}records ".
+				"WHERE star > 0 AND star<10";
+		if ($groupid) {
+			$query = $query . " AND groupid=$groupid";
+		}
+		$query = $query . " ORDER BY star DESC,modified DESC " .
+				"LIMIT $start,$limit";
+	} else {
+		$query = "SELECT id,title,star FROM {$dbtableprefix}records WHERE star=0";
+		if ($groupid) {
+			$query = $query . " AND groupid=$groupid";
+		}
+		$query = $query . " ORDER BY title ASC " .
+				"LIMIT $start,$limit";
+	}
+	
+	return $query;
 }
 
 # Вывод записи

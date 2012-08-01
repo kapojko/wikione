@@ -41,79 +41,31 @@ else {
 out_html_header($title);
 # Шапка
 out_header($groupid,$mode);
+
 # Режим списка
-echo "<div class='indexmode'>
-	<a class='smalllink' href='index.php?" .
+echo "<div class='indexmode'>";
+
+echo "<a class='smalllink' href='index.php?" .
 		($groupid ? "groupid=$groupid&" : "") .
-		"mode=tasks'>Дела</a>
-	<a class='smalllink' href='index.php?" .
+		"mode=tasks'>";
+out_selected("Дела", $mode == 'tasks');
+echo "</a> ";
+
+echo "<a class='smalllink' href='index.php?" .
 		($groupid ? "groupid=$groupid&" : "") .
-		"mode=notes'>Записи</a>
-	</div>";
+		"mode=notes'>";
+out_selected(Записи, $mode == 'notes');
+echo "</a>";
+
+echo "</div>";
+
 # Список записей
 echo "<div class='indexrecordlist'>";
-if ($mode == 'tasks') { // вывод дел
-	// подсчитываем общее количество записей
-	$query = "SELECT COUNT(id) FROM {$dbtableprefix}records ".
-			"WHERE star > 0 AND star<10";
-	if ($groupid) {
-		$query = $query . " AND groupid=$groupid";
-	}
-	$r = mysql_query($query);
-	if (!$r) {
-		echo "Error: " . mysql_error();
-		return;
-	}
-	$row = mysql_fetch_row($r);
-	if (!$row) {
-		echo "Error: " . mysql_error();
-		return;
-	}
-	$totalcount = $row[0];
-
-	$query = "SELECT id,title,star FROM {$dbtableprefix}records ".
-		"WHERE star > 0 AND star<10";
-	if ($groupid) {
-		$query = $query . " AND groupid=$groupid";
-	}
-	$query = $query . " ORDER BY star DESC,modified DESC " .
-			"LIMIT $start,$maxindexnotes";;
-	$r = mysql_query($query);
-	if (!$r) {
-		echo "Error: " . mysql_error();
-		return;
-	}
-}
-else { // вывод записей
-	// подсчитываем общее количество записей
-	$query = "SELECT COUNT(id) FROM {$dbtableprefix}records WHERE star=0";
-	if ($groupid) {
-		$query = $query . " AND groupid=$groupid";
-	}
-	$r = mysql_query($query);
-	if (!$r) {
-		echo "Error: " . mysql_error();
-		return;
-	}
-	$row = mysql_fetch_row($r);
-	if (!$row) {
-		echo "Error: " . mysql_error();
-		return;
-	}
-	$totalcount = $row[0];
-	
-	$query = "SELECT id,title,star FROM {$dbtableprefix}records WHERE star=0";
-	if ($groupid) {
-		$query = $query . " AND groupid=$groupid";
-	}
-	$query = $query . " ORDER BY title ASC " .
-			"LIMIT $start,$maxindexnotes";
-	$r = mysql_query($query);
-	if (!$r) {
-		echo "Error: " . mysql_error();
-		return;
-	}
-}
+# подсчитываем общее количество записей
+$totalcount = get_total_record_count($groupid, $mode);
+# Читаем список записей
+$query = get_record_list_query($groupid, $mode, $start, $maxindexnotes);
+$r = mysql_query($query);
 echo "<ol start=" . ($start + 1) . ">";
 while ($row = mysql_fetch_row($r)) {
 	echo "<li><a href='record.php?" . ($groupid ? "groupid=$groupid&" : "") .
