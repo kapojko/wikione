@@ -24,7 +24,7 @@ if (isset($_GET['action'])) {
 			}
 			$newmaxindexnotes= $_POST['maxindexnotes'];
 			if (!mysql_query("UPDATE {$dbtableprefix}settings SET
-					pvalue='" . mysql_real_escape_string($maxindexnotes) . "'
+					pvalue='" . mysql_real_escape_string($newmaxindexnotes) . "'
 					WHERE pkey='maxindexnotes'")) {
 				echo "Error: " . mysql_error();
 				return;
