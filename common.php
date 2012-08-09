@@ -63,7 +63,7 @@ function get_current_url(){
 	return $currentUrl;
 }
 
-# Вывод кнопки копирования
+# Вывод кнопки копирования (текст не должен содержать спец. символов!)
 function out_clippy($text, $bgcolor='#FFF') {
 	echo <<<END
 <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"

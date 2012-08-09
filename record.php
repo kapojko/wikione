@@ -127,7 +127,7 @@ echo "<div align=right>
 # Ссылка
 echo "<div id='note_link' class='note_link' style='display:none'>
 	<a href='$record_url'>$record_url</a>";
-out_clippy($record_url);
+out_clippy(urlencode($record_url));
 echo "</div>";
 
 # Редактирование
