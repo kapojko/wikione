@@ -79,6 +79,7 @@ div.record {
 }
 div.recordtitle {
 	font-size:x-large;
+	font-family: "Arial Black", sans-serif;
 	margin:10;
 }
 div.recorddate {
@@ -86,6 +87,15 @@ div.recorddate {
 	padding:0 15;
 }
 div.recordtext {
+}
+div.note_link {
+	margin: 10px;
+	text-align: right;
+	font-size: small;
+	font-family: sans-serif;
+}
+div.note_link a{
+	color: #888;
 }
 div.comment {
 	margin:10 0 10 100;
