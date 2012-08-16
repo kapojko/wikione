@@ -34,3 +34,10 @@ v. 20120727
 * Redesigned "settings" table;
 * Divided all records in index page to "tasks" and "notes" (with according links);
 * Added max entry number for an index page and links within pages (1 2 3 ...)
+
+v. 20120816
+-----------
+
+* Added "link" button;
+* Added "visual" records (with WYSIWYG editor [TinyMCE]);
+* Record editing moved to separate page.

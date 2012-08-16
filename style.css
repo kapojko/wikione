@@ -41,6 +41,9 @@ div.pagelist {
 a.pagelink {
 	
 }
+a.link {
+    color:#445E96;
+}
 span.pseudolink {
 	border-bottom:1px dotted;
 	cursor:pointer;
@@ -99,4 +102,22 @@ div.note_link a{
 }
 div.comment {
 	margin:10 0 10 100;
+}
+
+table.form_table {
+    
+}
+td.form_left {
+    text-align: right;
+}
+td.form_right {
+    text-align: left;
+}
+td.form_comment {
+    color: #444;
+    font-style: italic;
+}
+td.form_final {
+	padding-top: 0.5em;
+	text-align: right;
 }
