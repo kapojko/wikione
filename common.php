@@ -278,7 +278,6 @@ function out_footer() {
 	echo "<hr style='margin-top:20'/>
 		<table width=100%><tr>
 		<td valign=top>
-			<a href='creole_cheat_sheet.html'>Разметка</a> 
 			<a href='admin.php'>Администрирование</a> ";
 	if ($use_authorization)
 		echo "<a href='login.php?logout'>Выйти</a>";
