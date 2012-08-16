@@ -45,15 +45,27 @@ if ($message) {
 }
 # Настройки
 ?>
-<h3>Настройки</h3>
+<div class="pagetitle">
+	<a href="index.php"><?php echo $title; ?></a> :: Настройки
+</div>
 <form action='admin.php?action=editsettings' method='POST'>
-	Заголовок: <input name='title' type='text' value=
-		'<?php echo $title; ?>'></input><br>
-	Количество записей в списке:
-	<input name='maxindexnotes' type='text' value=
-		'<?php echo $maxindexnotes; ?>'></input><br>
-	<input type='submit' value='Сохранить изменения'></input>
+	<table class="form_table">
+		<tr>
+			<td class="form_left">Заголовок</td>
+			<td class="form_right"><input name='title' type='text' value=
+			'<?php echo $title; ?>'></input></td>
+		</tr>
+		<tr>
+			<td class="form_left">Количество записей в списке</td>
+			<td class="form_right"><input name='maxindexnotes' type='text' value=
+			'<?php echo $maxindexnotes; ?>'></input></td>
+		</tr>
+		<tr>
+			<td class="form_final" colspan="2">
+				<input type='submit' value='Сохранить изменения'></input>
+			</td>
+		</tr>
+	</table>
 </form>
-<p><a href='index.php'>На главную страницу</a>
 </body>
 </html>

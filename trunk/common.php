@@ -38,6 +38,33 @@ function load_settings($dbtableprefix) {
 	return $settings;
 }
 
+# Чтение записи
+function read_record($recordid) {
+	global $dbtableprefix;
+	
+	$r = mysql_query("SELECT groupid,title,star,kind,text,rendered_text,created,modified 
+		FROM {$dbtableprefix}records
+		WHERE id=$recordid");
+	if (!mysql_num_rows($r)) {
+		return;
+	}
+	$row = mysql_fetch_row($r);
+	$record = array(
+		"id" => $recordid,
+		"groupid" => $row[0],
+		"groupname" => NULL,
+		"title" => stripslashes($row[1]),
+		"star" => $row[2],
+		"kind" => $row[3],
+		"text" => stripslashes($row[4]),
+		"rendered_text" => stripslashes($row[5]),
+		"created" => $row[6],
+		"modified" => $row[7]
+	);
+	
+	return $record;
+}
+
 # Подключение Вики-движка
 function load_wiki_engine() {
 	require_once('./creole.php');
@@ -100,7 +127,6 @@ function out_html_header($title) {
 			<link rel='icon' type='image/png' href='chess-knight.png' />
 			<link rel='stylesheet' type='text/css' href='style.css' />
 			<title>$title</title>
-			<script type='text/javascript' src='ZeroClipboard.js'></script>
 		</head>
 		<body>";
 }
@@ -170,27 +196,33 @@ function out_header($groupid, $mode) {
 				<input type='submit' value='Сохранить' />
 			</form></div>";
 	}
-	echo "<div id='addgroup' style='display:none'>
-		<form action='action.php?action=addgroup' method='POST'>
-			<input name='name' type='text'/>
-			<input type='submit' value='Добавить группу'/>
+echo <<<EOT
+	<div id="addgroup" style="display:none">
+		<form action="action.php?action=addgroup" method="POST">
+			<input name="name" type="text"/>
+			<input type="submit" value="Добавить группу"/>
 		</form>
-		</div>
-		<div id='addrecord' style='display:none'>
-		<form action='action.php?action=addrecord" . ($groupid ?
-			"&groupid=$groupid" : "") . "&mode=$mode'
-			method='POST' style='margin-top:7px'>
-			<input name='title' type='text' size=30 />
-			<select name='star'/>
+	</div>
+	<div id="addrecord" style="display:none">
+		<form action="action.php?action=addrecord" method="POST"
+				style="margin-top:7px">
+			<input name="title" type="text" size=30 />
+			<input name="groupid" type="hidden" value="$groupid"></input>
+			<select name="star"/>
 				<option value=0 selected> </option>
 				<option value=1>*</option>
 				<option value=2>**</option>
 				<option value=3>***</option>
 			</select>
-			<input type='submit' value='Добавить запись' />
+			<select name="kind">
+				<option value="creole">Разметка</option>
+				<option value="tinymce" selected>Редактор</option>
+			</select>
+			<input type="submit" value="Добавить запись" />
 		</form>
-		</div>
-		</td></tr></table>";
+	</div>
+	</td></tr></table>
+EOT;
 }
 
 # Подсчёт числа записей

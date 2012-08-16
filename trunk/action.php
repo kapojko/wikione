@@ -95,13 +95,16 @@ if (isset($_GET['action'])) {
 		case 'addrecord':
 			$newrecordtitle = $_POST['title'];
 			if ($newrecordtitle) {
+				$newgroupid = $_POST['groupid'];
 				$newrecordstar = $_POST['star'];
+				$newrecordkind = $_POST['kind'];
 				$query = "INSERT INTO {$dbtableprefix}records SET
+				kind = '$newrecordkind',
 				title='" . mysql_real_escape_string($newrecordtitle) . "',
 				star='$newrecordstar',
 				created=NOW()";
-				if ($groupid)
-					$query = $query . ",groupid=$groupid";
+				if ($newgroupid)
+					$query = $query . ",groupid=$newgroupid";
 				if (!mysql_query($query)) {
 					echo "Error: " . mysql_error();
 					return;
@@ -115,8 +118,6 @@ if (isset($_GET['action'])) {
 				$result = true;
 				$message = "Запись добавлена.";
 				$location = "record.php?recordid={$row[0]}";
-				if ($groupid)
-					$location = $location . "&groupid=$groupid";
 			}
 			else {
 				$result = false;
@@ -146,16 +147,12 @@ if (isset($_GET['action'])) {
 				$result = true;
 				$message = "Запись изменена.";
 				$location = "record.php?recordid=$recordid";
-				if ($groupid)
-					$location = $location . "&groupid=$groupid";
 			}
 			else { # Удаление
 				if ($_POST['text']) {
 					$result = true;
 					$message = "Удалить можно тольку запись без текста!";
 					$location = "record.php?recordid=$recordid";
-					if ($groupid)
-						$location = $location . "&groupid=$groupid";
 				}
 				else {
 					if (!mysql_query("DELETE FROM {$dbtableprefix}records
@@ -189,15 +186,11 @@ if (isset($_GET['action'])) {
 				$result = true;
 				$message = "Комментарий добавлен.";
 				$location = "record.php?recordid=$recordid";
-				if ($groupid)
-					$location = $location . "&groupid=$groupid";
 			}
 			else {
 				$result = false;
 				$message = "Текст комментария не задан!";
 				$location = "record.php?recordid=$recordid";
-				if ($groupid)
-					$location = $location . "&groupid=$groupid";
 			}
 			break;
 	}
