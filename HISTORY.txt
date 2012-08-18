@@ -41,3 +41,10 @@ v. 20120816
 * Added "link" button;
 * Added "visual" records (with WYSIWYG editor [TinyMCE]);
 * Record editing moved to separate page.
+
+v. 20120818
+-----------
+
+* Moved "addgroup", "editgroup", "addrecord" to separete pages;
+* Added "editnote" action;
+* Improved comments view.

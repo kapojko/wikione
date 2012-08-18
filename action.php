@@ -25,6 +25,10 @@ if (isset($_GET['recordid']))
 	$recordid = $_GET['recordid'];
 else
 	$recordid = 0;
+if (isset($_GET['noteid']))
+	$noteid = $_GET['noteid'];
+else
+	$noteid = 0;
 
 if (isset($_GET['action'])) {
 	# Код установит переменные $result, $message и $location
@@ -32,9 +36,11 @@ if (isset($_GET['action'])) {
 	switch ($action) {
 		case 'addgroup':
 			$newgroupname = $_POST['name'];
+			$new_group_order = $_POST['order'];
 			if ($newgroupname) {
 				if (!mysql_query("INSERT INTO {$dbtableprefix}groups SET name='" .
-								mysql_real_escape_string($newgroupname) . "'")) {
+						mysql_real_escape_string($newgroupname) . "',
+						`order` = " . (real)$new_group_order)) {
 					echo "Error: " . mysql_error();
 					return;
 				}
@@ -59,15 +65,17 @@ if (isset($_GET['action'])) {
 				return;
 			}
 			$newgroupname = $_POST['name'];
+			$new_group_order = $_POST['order'];
 			if ($newgroupname) { # переименование
 				if (!mysql_query("UPDATE {$dbtableprefix}groups SET name='" .
-								mysql_real_escape_string($newgroupname) . "' 
-					WHERE id=$groupid")) {
+						mysql_real_escape_string($newgroupname) . "',
+						`order` = " . (real)$new_group_order . "
+						WHERE id=$groupid")) {
 					echo "Error: " . mysql_error();
 					return;
 				}
 				$result = true;
-				$message = "Группа переименована.";
+				$message = "Группа изменена.";
 				$location = "index.php?groupid=$groupid";
 			} else { # Удаление
 				$r = mysql_query("SELECT id FROM {$dbtableprefix}records
@@ -99,10 +107,10 @@ if (isset($_GET['action'])) {
 				$newrecordstar = $_POST['star'];
 				$newrecordkind = $_POST['kind'];
 				$query = "INSERT INTO {$dbtableprefix}records SET
-				kind = '$newrecordkind',
-				title='" . mysql_real_escape_string($newrecordtitle) . "',
-				star='$newrecordstar',
-				created=NOW()";
+						kind = '$newrecordkind',
+						title='" . mysql_real_escape_string($newrecordtitle) . "',
+						star='$newrecordstar',
+						created=NOW()";
 				if ($newgroupid)
 					$query = $query . ",groupid=$newgroupid";
 				if (!mysql_query($query)) {
@@ -191,6 +199,53 @@ if (isset($_GET['action'])) {
 				$result = false;
 				$message = "Текст комментария не задан!";
 				$location = "record.php?recordid=$recordid";
+			}
+			break;
+		case 'editnote':
+			if (!$noteid) {
+				echo "Error: note id is not given";
+				return;
+			}
+			$new_note_text = $_POST['text'];
+			if ($new_note_text) { # изменение
+				$query = "UPDATE {$dbtableprefix}notes SET
+						text='" . mysql_real_escape_string($new_note_text) . "'
+						WHERE id = $noteid";
+				if (!mysql_query($query)) {
+					echo "Error: " . mysql_error();
+					return;
+				}
+				
+				# читаем идентификатор записи для перехода
+				$r = mysql_query("SELECT recordid FROM {$dbtableprefix}notes
+						WHERE id = $noteid");
+				$row = mysql_fetch_row($r);
+				if (!$row) {
+					echo "Error: unable to select note with given id";
+					return;
+				}
+				$note_record_id = $row[0];
+				
+				$result = true;
+				$message = "Комментарий изменён.";
+				$location = "record.php?recordid=$note_record_id";
+			}
+			else { # Удаление
+				# читаем идентификатор записи для перехода
+				$r = mysql_query("SELECT recordid FROM {$dbtableprefix}notes
+						WHERE id = $noteid");
+				$row = mysql_fetch_row($r);
+				if (!$row) {
+					echo "Error: unable to select note with given id";
+					return;
+				}
+				$note_record_id = $row[0];
+
+				mysql_query("DELETE FROM {$dbtableprefix}notes
+						WHERE id = $noteid");
+				$result = true;
+				$message = "Комментарий удалён";
+				$location = "record.php?recordid=$note_record_id";
 			}
 			break;
 	}

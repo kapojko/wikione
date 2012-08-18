@@ -65,6 +65,44 @@ function read_record($recordid) {
 	return $record;
 }
 
+# Чтение группы
+function read_group($groupid) {
+	global $dbtableprefix;
+	
+	$r = mysql_query("SELECT name,`order` FROM {$dbtableprefix}groups 
+			WHERE id = $groupid");
+	$row = mysql_fetch_row($r);
+	if (!$row) {
+		return;
+	}
+	$group = array(
+		"id" => $groupid,
+		"name" => stripslashes($row[0]),
+		"order" => (real)$row[1]);
+	
+	return $group;
+}
+
+# Чтение комментария
+function read_note($noteid) {
+	global $dbtableprefix;
+
+	$r = mysql_query("SELECT recordid,text,created FROM {$dbtableprefix}notes
+			WHERE id = $noteid");
+	$row = mysql_fetch_row($r);
+	if (!$row) {
+		return;
+	}
+	$note = array(
+		"id" => $noteid,
+		"recordid" => $row[0],
+		"text" => stripslashes($row[1]),
+		"created" => $row[2]
+	);
+	
+	return $note;
+}
+
 # Подключение Вики-движка
 function load_wiki_engine() {
 	require_once('./creole.php');
@@ -174,55 +212,17 @@ function out_header($groupid, $mode) {
 	echo "</td><td align=right>";
 	if ($groupid) {
 		# Ссылка на редактирование группы
-		echo "<span class='pseudolink' 	onclick=
-			'document.getElementById(\"editgroup\").style.display=\"block\"'>
-			Изменить&nbsp;группу</span>";
+		echo "<a class='buttonlink' href='editgroup.php?groupid=$groupid'>
+				Изменить&nbsp;группу
+			</a>";
 	}
-	echo "<span class='pseudolink' onclick=
-		'document.getElementById(\"addgroup\").style.display=\"block\"'>
-		Добавить&nbsp;группу</span>
-		<span class='pseudolink' onclick=
-		'document.getElementById(\"addrecord\").style.display=\"block\"'>
-		Добавить&nbsp;запись</span>";
-	if ($groupid) {
-		# Редактирование группы
-		echo "<div id='editgroup' style='display:none'>
-			<form action='action.php?action=editgroup&groupid=$groupid&mode=$mode'
-			method='POST'>
-				<input name='name' id='edit_group_name' type='text' value='$groupname'/>
-				<span class='pseudolink' onclick=
-					'document.getElementById(\"edit_group_name\").value=\"\"'>
-					Очистить</span>
-				<input type='submit' value='Сохранить' />
-			</form></div>";
-	}
-echo <<<EOT
-	<div id="addgroup" style="display:none">
-		<form action="action.php?action=addgroup" method="POST">
-			<input name="name" type="text"/>
-			<input type="submit" value="Добавить группу"/>
-		</form>
-	</div>
-	<div id="addrecord" style="display:none">
-		<form action="action.php?action=addrecord" method="POST"
-				style="margin-top:7px">
-			<input name="title" type="text" size=30 />
-			<input name="groupid" type="hidden" value="$groupid"></input>
-			<select name="star"/>
-				<option value=0 selected> </option>
-				<option value=1>*</option>
-				<option value=2>**</option>
-				<option value=3>***</option>
-			</select>
-			<select name="kind">
-				<option value="creole">Разметка</option>
-				<option value="tinymce" selected>Редактор</option>
-			</select>
-			<input type="submit" value="Добавить запись" />
-		</form>
-	</div>
-	</td></tr></table>
-EOT;
+	echo "<a class='buttonlink' href='addgroup.php'>
+			Добавить&nbsp;группу
+		</a>
+		<a class='buttonlink' href='addrecord.php'>
+			Добавить&nbsp;запись
+		</a>";	
+	echo "</td></tr></table>";
 }
 
 # Подсчёт числа записей
