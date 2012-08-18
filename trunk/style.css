@@ -41,8 +41,9 @@ div.pagelist {
 a.pagelink {
 	
 }
-a.link {
+a.buttonlink {
     color:#445E96;
+	text-decoration: none;
 }
 span.pseudolink {
 	border-bottom:1px dotted;
@@ -100,8 +101,15 @@ div.note_link {
 div.note_link a{
 	color: #888;
 }
-div.comment {
+
+table.comments {
 	margin:10 0 10 100;
+}
+td.comment_header {
+	width: 150px;
+	padding: 5px 20px 5px 0;
+}
+td.comment_text {
 }
 
 table.form_table {

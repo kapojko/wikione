@@ -121,17 +121,24 @@ out_clippy(urlencode($record_url));
 echo "</div>";
 
 # Комментарии
-$r = mysql_query("SELECT text,created FROM {$dbtableprefix}notes
+echo "<table class='comments'>";
+$r = mysql_query("SELECT id,text,created FROM {$dbtableprefix}notes
 		WHERE recordid={$record["id"]}");
 if (!$r) {
 	echo "Error: " . mysql_error();
 	return;
 }
 while ($row = mysql_fetch_row($r)) {
-	echo "<div class='comment'><table><tr>
-		<td style='font-style:italic'>" . strftime("%d %b %Y %H:%M", strtotime($row[1])) . "
-		<td style='padding-left:20px'>" . stripslashes($row[0]) . "</tr></table></div>";
+	echo "<tr>
+		<td class='comment_header'>" .
+			strftime("%d %b %Y %H:%M", strtotime($row[2])) . "<br>
+			<a class='buttonlink' href='editnote.php?noteid={$row[0]}'>Изменить</a>
+		</td>
+		<td class='comment_text'>" . stripslashes($row[1]) . "</td>
+		</tr>";
 }
+echo "</table>";
+
 # Готово
 echo "</div>";
 
