@@ -220,7 +220,8 @@ function out_header($groupid, $mode) {
 	echo "<a class='buttonlink' href='addgroup.php'>
 			Добавить&nbsp;группу
 		</a>
-		<a class='buttonlink' href='addrecord.php'>
+		<a class='buttonlink' href='addrecord.php" .
+			($groupid ? "?groupid=$groupid" : "") . "'>
 			Добавить&nbsp;запись
 		</a>";	
 	echo "</td></tr></table>";
