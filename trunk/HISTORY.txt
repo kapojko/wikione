@@ -47,4 +47,5 @@ v. 20120818
 
 * Moved "addgroup", "editgroup", "addrecord" to separete pages;
 * Added "editnote" action;
-* Improved comments view.
+* Improved comments view;
+* Added ordering possibility for groups.

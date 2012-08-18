@@ -198,7 +198,8 @@ function out_header($groupid, $mode) {
 		</div>";
 	# Список групп
 	echo "<table width=100% class='groups'><tr valign='top'><td>";
-	$r = mysql_query("SELECT id,name FROM {$dbtableprefix}groups");
+	$r = mysql_query("SELECT id,name FROM {$dbtableprefix}groups
+			ORDER BY `order` ASC");
 	if (!$r) {
 		echo "Error: " . mysql_error();
 		return;
