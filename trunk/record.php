@@ -97,7 +97,7 @@ echo "</div>";
 
 # Кнопки управления
 echo "<div align=right>
-	<a class='link' href='editrecord.php?recordid={$record["id"]}'>
+	<a class='buttonlink' href='editrecord.php?recordid={$record["id"]}'>
 		Редактировать</a>
 	<span class='pseudolink' onclick=
 		'javascript:document.getElementById(\"addnote\").
