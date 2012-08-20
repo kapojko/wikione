@@ -42,7 +42,8 @@ if (!mysql_query($query)) {
 $query =
 		"CREATE TABLE {$dbtableprefix}groups (
 			id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-			name CHAR(30) NOT NULL
+			name CHAR(30) NOT NULL,
+			`order` REAL NOT NULL DEFAULT 0.0
 		)";
 if (!mysql_query($query)) {
 	echo "Error creating table: " . mysql_error();
@@ -55,6 +56,8 @@ $query =
 			groupid INTEGER,
 			title CHAR(100) NOT NULL,
 			star SMALLINT,
+			`kind` VARCHAR(10) NOT NULL,
+			`rendered_text` TEXT,
 			text TEXT,
 			created DATETIME,
 			modified DATETIME
