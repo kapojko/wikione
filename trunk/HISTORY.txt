@@ -49,3 +49,10 @@ v. 20120818
 * Added "editnote" action;
 * Improved comments view;
 * Added ordering possibility for groups.
+
+v. 20120820
+-----------
+
+* Changed folder structure and created explicit 'upload' folder;
+* Created 'install.sql' and 'uninstall.sql' instead of '.php' ones;
+* Cleaned up 'config.php'.

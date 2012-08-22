@@ -39,7 +39,7 @@ $title = $settings['title'];
 $maxindexnotes = $settings['maxindexnotes'];
 
 #Вывод
-out_html_header("WikiOne $wikione_version");
+out_html_header("WikiOne {$settings['version']}");
 if ($message) {
 	echo $message . "<br>";
 }
