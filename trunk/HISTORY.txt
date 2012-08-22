@@ -50,7 +50,7 @@ v. 20120818
 * Improved comments view;
 * Added ordering possibility for groups.
 
-v. 20120820
+v. 20120822
 -----------
 
 * Changed folder structure and created explicit 'upload' folder;
