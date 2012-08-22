@@ -32,8 +32,10 @@ if (!mysql_query($query)) {
 }
 $defaultpasswordcrypt = crypt($defaultpassword);
 $query =
-		"INSERT INTO {$dbtableprefix}settings(title)
-		VALUES('$defaulttitle')";
+		"INSERT INTO {$dbtableprefix}settings(pkey,pvalue)
+		VALUES ('title','Wikione'),
+			('maxindexnotes','100'),
+			('version', '20120818')";
 if (!mysql_query($query)) {
 	echo "Error: " . mysql_error();
 	return;
@@ -87,11 +89,6 @@ if (!mysql_query($query)) {
 	</head>
 	<body>
 		Установка завершена.
-		<p>Параметры по умолчанию:
-		<table border=1><tr>
-				<td><b>Заголовок</b></td>
-				<td><?php echo $defaulttitle; ?></td>
-			</tr></table>
 		<p><a href="index.php">Перейти к главной странице</a>
 	</body>
 </html>
