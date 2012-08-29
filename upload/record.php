@@ -29,6 +29,7 @@ if (!$record) {
 }
 $record_url = get_current_url();
 
+$groupid = $record["groupid"];
 $mode = ($record["star"] > 0 && $record["star"] < 10) ? 'tasks' : 'notes';
 
 # Выводим страницу
