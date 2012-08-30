@@ -56,3 +56,9 @@ v. 20120822
 * Changed folder structure and created explicit 'upload' folder;
 * Created 'install.sql' and 'uninstall.sql' instead of '.php' ones;
 * Cleaned up 'config.php'.
+
+v. 20120830
+-----------
+
+* Bugfix: left pane on 'Record' page displayed not the current group
+	records, but all ones.
