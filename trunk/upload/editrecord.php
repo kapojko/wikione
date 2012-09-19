@@ -122,7 +122,9 @@ out_html_header($title);
 </form>
 
 <?php if ($record['kind'] == 'creole') { ?>
-<p><a href="creole_cheat_sheet.html">Справка по разметке</a></p>
+<p><a href="creole_cheat_sheet.html">Справка по разметке (Creole)</a></p>
+<?php } else if ($record['kind'] == 'textile') { ?>
+<p><a href="http://textile.thresholdstate.com/">Справка по разметке (Textile)</a></p>
 <?php } /* if */ ?>
 
 </body>

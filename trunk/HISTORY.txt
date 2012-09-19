@@ -62,3 +62,11 @@ v. 20120830
 
 * Bugfix: left pane on 'Record' page displayed not the current group
 	records, but all ones.
+	
+v. 20120919
+-----------
+
+* Added Textile wiki engine;
+* Now default record editor can be changed in settings;
+* Now deleted record group opens automatically after deletion;
+* Added 'All' selector for groups (among 'Tasks' and 'Notes').

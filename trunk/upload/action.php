@@ -12,23 +12,6 @@ if (!connect_to_db($dbhost, $dbuser, $dbpwd, $dbname)) {
 # Читаем настройки
 $settings = load_settings($dbtableprefix);
 $title = $settings['title'];
-# Подключаем движок Вики
-$creole = load_wiki_engine();
-
-# Читаем параметры текущего вида
-if (isset($_GET['groupid'])) {
-	$groupid = $_GET['groupid'];
-}
-else
-	$groupid = 0;
-if (isset($_GET['recordid']))
-	$recordid = $_GET['recordid'];
-else
-	$recordid = 0;
-if (isset($_GET['noteid']))
-	$noteid = $_GET['noteid'];
-else
-	$noteid = 0;
 
 if (isset($_GET['action'])) {
 	# Код установит переменные $result, $message и $location
@@ -60,10 +43,11 @@ if (isset($_GET['action'])) {
 			}
 			break;
 		case 'editgroup':
-			if (!$groupid) {
+			if (!isset($_GET['groupid'])) {
 				echo "Error: group id is not given";
 				return;
 			}
+			$groupid = $_GET['groupid'];
 			$newgroupname = $_POST['name'];
 			$new_group_order = $_POST['order'];
 			if ($newgroupname) { # переименование
@@ -136,10 +120,11 @@ if (isset($_GET['action'])) {
 			}
 			break;
 		case 'editrecord':
-			if (!$recordid) {
+			if (!isset($_GET['recordid'])) {
 				echo "Error: record id is not given";
 				return;
 			}
+			$recordid = $_GET['recordid'];
 			$newrecordtitle = $_POST['title'];
 			if ($newrecordtitle) { # изменение
 				$query = "UPDATE {$dbtableprefix}records SET groupid='{$_POST['groupid']}',
@@ -163,6 +148,7 @@ if (isset($_GET['action'])) {
 					$location = "record.php?recordid=$recordid";
 				}
 				else {
+					$record = read_record($recordid);
 					if (!mysql_query("DELETE FROM {$dbtableprefix}records
 						WHERE id=$recordid")) {
 						echo "Error: " . mysql_error();
@@ -171,16 +157,17 @@ if (isset($_GET['action'])) {
 					$result = true;
 					$message = "Запись удалена";
 					$location = "index.php";
-					if ($groupid)
-						$location = $location . "?groupid=$groupid";
+					if ($record['groupid'])
+						$location = $location . "?groupid={$record['groupid']}";
 				}
 			}
 			break;
 		case 'addnote':
-			if (!$recordid) {
+			if (!isset($_GET['recordid'])) {
 				echo "Error: record id is not given";
 				return;
 			}
+			$recordid = $_GET['recordid'];
 			$notetext = $_POST['text'];
 			if ($notetext) {
 				$query = "INSERT INTO {$dbtableprefix}notes(recordid,text,created)
@@ -202,10 +189,11 @@ if (isset($_GET['action'])) {
 			}
 			break;
 		case 'editnote':
-			if (!$noteid) {
+			if (!isset($_GET['noteid'])) {
 				echo "Error: note id is not given";
 				return;
 			}
+			$noteid = $_GET['noteid'];
 			$new_note_text = $_POST['text'];
 			if ($new_note_text) { # изменение
 				$query = "UPDATE {$dbtableprefix}notes SET

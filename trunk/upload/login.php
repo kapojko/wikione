@@ -13,8 +13,6 @@ if (!connect_to_db($dbhost, $dbuser, $dbpwd, $dbname)) {
 # Читаем настройки
 $settings = load_settings($dbtableprefix);
 $title = $settings['title'];
-# Подключаем движок Вики
-$creole = load_wiki_engine();
 
 if (isset($_SESSION['login'])) {
 	# Авторизация уже выполнена

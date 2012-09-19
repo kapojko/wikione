@@ -70,8 +70,12 @@ out_html_header($title);
 			<td class="form_left">Способ редактирования</td>
 			<td>
 				<select name="kind">
-					<option value="creole">Разметка</option>
-					<option value="tinymce" selected>Визуальный редактор</option>
+					<option value="creole" <?php if ($settings['default_kind'] == 'creole')
+						echo 'selected'; ?> >Разметка (Creole)</option>
+					<option value="textile"  <?php if ($settings['default_kind'] == 'textile')
+						echo 'selected'; ?> >Разметка (Textile)</option>
+					<option value="tinymce" <?php if ($settings['default_kind'] == 'tinymce')
+						echo 'selected'; ?> >Визуальный редактор</option>
 				</select>
 			</td>
 			<td class="form_comment">

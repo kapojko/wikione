@@ -88,8 +88,11 @@ if ($record["rendered_text"]) {
 	echo $record["rendered_text"];
 } else {
 	if ($record["kind"] == "creole") {
-		$creole = load_wiki_engine();
+		$creole = load_wiki_engine("creole");
 		echo $creole->parse($record["text"]);
+	} else if ($record["kind"] == "textile") {
+		$textile = load_wiki_engine("textile");
+		echo $textile->TextileThis($record["text"]);
 	} else {
 		echo $record["text"];
 	}

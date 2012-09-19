@@ -28,7 +28,7 @@ if (isset($_GET['mode'])) {
 	$mode = $_GET['mode'];
 }
 else {
-	$mode = 'tasks';
+	$mode = 'all';
 }
 if (isset($_GET['start'])) {
 	$start = $_GET['start'];
@@ -44,6 +44,12 @@ out_header($groupid,$mode);
 
 # Режим списка
 echo "<div class='indexmode'>";
+
+echo "<a class='smalllink' href='index.php?" .
+		($groupid ? "groupid=$groupid&" : "") .
+		"mode=all'>";
+out_selected("Всё", $mode == 'all');
+echo "</a> ";
 
 echo "<a class='smalllink' href='index.php?" .
 		($groupid ? "groupid=$groupid&" : "") .
