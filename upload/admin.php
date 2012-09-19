@@ -15,20 +15,15 @@ if (isset($_GET['action'])) {
 	$action = $_GET['action'];
 	switch ($action) {
 		case 'editsettings':
-			$newtitle = $_POST['title'];
-			if (!mysql_query("UPDATE {$dbtableprefix}settings SET
-					pvalue='" . mysql_real_escape_string($newtitle) . "'
-					WHERE pkey='title'")) {
-				echo "Error: " . mysql_error();
-				return;
-			}
-			$newmaxindexnotes= $_POST['maxindexnotes'];
-			if (!mysql_query("UPDATE {$dbtableprefix}settings SET
-					pvalue='" . mysql_real_escape_string($newmaxindexnotes) . "'
-					WHERE pkey='maxindexnotes'")) {
-				echo "Error: " . mysql_error();
-				return;
-			}
+			mysql_query("UPDATE {$dbtableprefix}settings SET
+					pvalue='" . mysql_real_escape_string($_POST['title']) . "'
+					WHERE pkey='title'");
+			mysql_query("UPDATE {$dbtableprefix}settings SET
+					pvalue='" . mysql_real_escape_string($_POST['maxindexnotes']) . "'
+					WHERE pkey='maxindexnotes'");
+			mysql_query("UPDATE {$dbtableprefix}settings SET
+					pvalue='" . mysql_real_escape_string($_POST['default_kind']) . "'
+					WHERE pkey='default_kind'");
 			$message = "Изменения сохранены.";
 			break;
 	}
@@ -59,6 +54,19 @@ if ($message) {
 			<td class="form_left">Количество записей в списке</td>
 			<td class="form_right"><input name='maxindexnotes' type='text' value=
 			'<?php echo $maxindexnotes; ?>'></input></td>
+		</tr>
+		<tr>
+			<td class="form_left">Способ редактирования по умолчанию</td>
+			<td class="form_right">
+				<select name='default_kind'>
+					<option value="creole" <?php if ($settings['default_kind'] == 'creole')
+						echo 'selected'; ?> >Разметка (Creole)</option>
+					<option value="textile"  <?php if ($settings['default_kind'] == 'textile')
+						echo 'selected'; ?> >Разметка (Textile)</option>
+					<option value="tinymce" <?php if ($settings['default_kind'] == 'tinymce')
+						echo 'selected'; ?> >Визуальный редактор</option>
+				</select>
+			</td>
 		</tr>
 		<tr>
 			<td class="form_final" colspan="2">

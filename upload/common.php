@@ -104,17 +104,24 @@ function read_note($noteid) {
 }
 
 # Подключение Вики-движка
-function load_wiki_engine() {
-	require_once('./creole.php');
-	return new creole(
-			array(
-				'link_format' => '/index.php?nameid=%s'
-			#'interwiki' => array(
-			#	'WikiCreole' => 'http://www.wikicreole.org/wiki/%s',
-			#	'Wikipedia' => 'http://en.wikipedia.org/wiki/%s'
-			#)
-			)
-	);
+function load_wiki_engine($kind) {
+	if ($kind == 'creole') {
+		require_once('./creole.php');
+		return new creole(
+				array(
+					'link_format' => '/index.php?nameid=%s'
+				#'interwiki' => array(
+				#	'WikiCreole' => 'http://www.wikicreole.org/wiki/%s',
+				#	'Wikipedia' => 'http://en.wikipedia.org/wiki/%s'
+				#)
+				)
+		);
+	} else if ($kind == 'textile') {
+		require_once('./classTextile.php');
+		return new Textile();
+	} else {
+		die("Unknown wiki engine kind: $kind");
+	}
 }
 
 # Получение текущего URL скрипта
@@ -231,10 +238,16 @@ function out_header($groupid, $mode) {
 function get_total_record_count($groupid, $mode) {
 	global $dbtableprefix;
 	
-	$query = "SELECT COUNT(id) FROM {$dbtableprefix}records " .
-		"WHERE " .
-		(($mode == 'tasks') ? "star > 0 AND star < 10" : "star = 0") .
-		($groupid ? " AND groupid=$groupid" : "");
+	$query = "SELECT COUNT(id) FROM {$dbtableprefix}records WHERE ";
+	if ($mode == 'tasks') {
+		$query .= "star > 0 AND star < 10";
+	} else if ($mode == 'notes') {
+		$query .= "star = 0";
+	} else {
+		$query .= 'TRUE';
+	}
+	if ($groupid)
+		$query .= " AND groupid=$groupid";
 	$r = mysql_query($query);
 	$row = mysql_fetch_row($r);
 	$totalcount = $row[0];
@@ -246,13 +259,6 @@ function get_total_record_count($groupid, $mode) {
 function get_record_list_query($groupid, $mode, $start, $limit) {
 	global $dbtableprefix;
 	
-	$query = "SELECT id,title,star FROM {$dbtableprefix}records " . 
-			"WHERE " .
-			(($mode == 'tasks') ? "star > 0 AND star < 10 " : "star = 0 ") .
-			($groupid ? " AND groupid=$groupid" : "") .
-			"ORDER BY " .
-			(($mode == 'tasks') ? "star DESC, modified DESC " : "title ASC ") .
-			"LIMIT $start,$limit";
 	if ($mode == 'tasks') {
 		$query = "SELECT id,title,star FROM {$dbtableprefix}records ".
 				"WHERE star > 0 AND star<10";
@@ -261,12 +267,19 @@ function get_record_list_query($groupid, $mode, $start, $limit) {
 		}
 		$query = $query . " ORDER BY star DESC,modified DESC " .
 				"LIMIT $start,$limit";
-	} else {
+	} else if ($mode == 'notes') {
 		$query = "SELECT id,title,star FROM {$dbtableprefix}records WHERE star=0";
 		if ($groupid) {
 			$query = $query . " AND groupid=$groupid";
 		}
 		$query = $query . " ORDER BY title ASC " .
+				"LIMIT $start,$limit";
+	} else {
+		$query = "SELECT id,title,star FROM {$dbtableprefix}records";
+		if ($groupid) {
+			$query .= " WHERE groupid=$groupid";
+		}
+		$query .= " ORDER BY star DESC,modified DESC " .
 				"LIMIT $start,$limit";
 	}
 	
